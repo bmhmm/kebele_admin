@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useForm } from '../../hooks/useForm';
-import { 
-  User, 
-  Home, 
-  Phone, 
+
+import {
+  User,
+  Home,
+  Phone,
   Camera,
   Upload,
   Calendar,
@@ -13,6 +14,7 @@ import {
 
 const AddIndividualForm = () => {
   const [photoPreview, setPhotoPreview] = useState(null);
+  const [photoFile, setPhotoFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { values, errors, handleChange, handleSubmit, validateField } = useForm({
@@ -46,7 +48,7 @@ const AddIndividualForm = () => {
       if (!values.houseNumber.trim()) errors.houseNumber = 'House number is required';
       if (!values.relationship) errors.relationship = 'Relationship is required';
       if (!values.phone.trim()) errors.phone = 'Phone number is required';
-      
+
       // Phone validation for Ethiopian format
       const phoneRegex = /^(\+251|0)(9|7)[0-9]{8}$/;
       if (values.phone && !phoneRegex.test(values.phone.replace(/\s+/g, ''))) {
@@ -64,12 +66,43 @@ const AddIndividualForm = () => {
     onSubmit: async (values) => {
       setIsSubmitting(true);
       try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        console.log('Form submitted:', values);
-        // Handle successful submission
+        const formData = new FormData();
+
+        // Append all form fields
+        Object.keys(values).forEach(key => {
+          if (values[key] !== null && values[key] !== undefined) {
+            formData.append(key, values[key]);
+          }
+        });
+
+        // Append photo if exists
+        if (photoFile) {
+          formData.append('photo', photoFile);
+        }
+
+        const response = await fetch('http://localhost:5000/api/individuals', {
+          method: 'POST',
+          body: formData,
+          // Note: Don't set Content-Type header for FormData, browser will set it automatically with boundary
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.message || 'Failed to submit form');
+        }
+
+        // Handle success
+        console.log('Individual added successfully:', result);
+        alert('Individual registered successfully!');
+
+        // Reset form
+        // You can add form reset logic here
+        window.location.reload(); // Simple reload for demo
+
       } catch (error) {
         console.error('Submission error:', error);
+        alert(`Error: ${error.message}`);
       } finally {
         setIsSubmitting(false);
       }
@@ -79,14 +112,32 @@ const AddIndividualForm = () => {
   const handlePhotoUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
+      // Validate file size
       if (file.size > 5 * 1024 * 1024) {
         alert('File size must be less than 5MB');
         return;
       }
+
+      // Validate file type
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+      if (!allowedTypes.includes(file.type)) {
+        alert('Only JPEG, PNG, and GIF images are allowed');
+        return;
+      }
+
+      setPhotoFile(file);
       const reader = new FileReader();
       reader.onload = (e) => setPhotoPreview(e.target.result);
       reader.readAsDataURL(file);
     }
+  };
+
+  const removePhoto = () => {
+    setPhotoPreview(null);
+    setPhotoFile(null);
+    // Reset file input
+    const fileInput = document.getElementById('photo-upload');
+    if (fileInput) fileInput.value = '';
   };
 
   const calculateAge = (dob) => {
@@ -152,9 +203,8 @@ const AddIndividualForm = () => {
                 value={values.firstName}
                 onChange={handleChange}
                 onBlur={() => validateField('firstName')}
-                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${
-                  errors.firstName ? 'border-red-300' : 'border-gray-300'
-                }`}
+                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${errors.firstName ? 'border-red-300' : 'border-gray-300'
+                  }`}
                 placeholder="Enter first name"
               />
               {errors.firstName && (
@@ -173,9 +223,8 @@ const AddIndividualForm = () => {
                 value={values.lastName}
                 onChange={handleChange}
                 onBlur={() => validateField('lastName')}
-                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${
-                  errors.lastName ? 'border-red-300' : 'border-gray-300'
-                }`}
+                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${errors.lastName ? 'border-red-300' : 'border-gray-300'
+                  }`}
                 placeholder="Enter last name"
               />
               {errors.lastName && (
@@ -197,9 +246,8 @@ const AddIndividualForm = () => {
                   onChange={handleDobChange}
                   onBlur={() => validateField('dob')}
                   max={new Date().toISOString().split('T')[0]}
-                  className={`w-full pl-10 pr-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${
-                    errors.dob ? 'border-red-300' : 'border-gray-300'
-                  }`}
+                  className={`w-full pl-10 pr-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${errors.dob ? 'border-red-300' : 'border-gray-300'
+                    }`}
                 />
               </div>
               {errors.dob && (
@@ -220,9 +268,8 @@ const AddIndividualForm = () => {
                 onBlur={() => validateField('age')}
                 min="1"
                 max="120"
-                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${
-                  errors.age ? 'border-red-300' : 'border-gray-300'
-                }`}
+                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${errors.age ? 'border-red-300' : 'border-gray-300'
+                  }`}
                 placeholder="Enter age"
               />
               {errors.age && (
@@ -240,9 +287,8 @@ const AddIndividualForm = () => {
                 value={values.gender}
                 onChange={handleChange}
                 onBlur={() => validateField('gender')}
-                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${
-                  errors.gender ? 'border-red-300' : 'border-gray-300'
-                }`}
+                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${errors.gender ? 'border-red-300' : 'border-gray-300'
+                  }`}
               >
                 <option value="">Select Gender</option>
                 <option value="male">Male</option>
@@ -263,9 +309,8 @@ const AddIndividualForm = () => {
                 value={values.religion}
                 onChange={handleChange}
                 onBlur={() => validateField('religion')}
-                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${
-                  errors.religion ? 'border-red-300' : 'border-gray-300'
-                }`}
+                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${errors.religion ? 'border-red-300' : 'border-gray-300'
+                  }`}
               >
                 <option value="">Select Religion</option>
                 <option value="islam">Islam</option>
@@ -308,9 +353,8 @@ const AddIndividualForm = () => {
                   value={values.occupation}
                   onChange={handleChange}
                   onBlur={() => validateField('occupation')}
-                  className={`w-full pl-10 pr-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${
-                    errors.occupation ? 'border-red-300' : 'border-gray-300'
-                  }`}
+                  className={`w-full pl-10 pr-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${errors.occupation ? 'border-red-300' : 'border-gray-300'
+                    }`}
                   placeholder="Enter occupation"
                 />
               </div>
@@ -331,9 +375,8 @@ const AddIndividualForm = () => {
                   value={values.education}
                   onChange={handleChange}
                   onBlur={() => validateField('education')}
-                  className={`w-full pl-10 pr-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${
-                    errors.education ? 'border-red-300' : 'border-gray-300'
-                  }`}
+                  className={`w-full pl-10 pr-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${errors.education ? 'border-red-300' : 'border-gray-300'
+                    }`}
                 >
                   <option value="">Select Education Level</option>
                   <option value="none">No Formal Education</option>
@@ -376,9 +419,8 @@ const AddIndividualForm = () => {
                 value={values.familyNumber}
                 onChange={handleChange}
                 onBlur={() => validateField('familyNumber')}
-                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${
-                  errors.familyNumber ? 'border-red-300' : 'border-gray-300'
-                }`}
+                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${errors.familyNumber ? 'border-red-300' : 'border-gray-300'
+                  }`}
                 placeholder="Enter family number"
               />
               {errors.familyNumber && (
@@ -397,9 +439,8 @@ const AddIndividualForm = () => {
                 value={values.houseNumber}
                 onChange={handleChange}
                 onBlur={() => validateField('houseNumber')}
-                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${
-                  errors.houseNumber ? 'border-red-300' : 'border-gray-300'
-                }`}
+                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${errors.houseNumber ? 'border-red-300' : 'border-gray-300'
+                  }`}
                 placeholder="Enter house number"
               />
               {errors.houseNumber && (
@@ -417,9 +458,8 @@ const AddIndividualForm = () => {
                 value={values.relationship}
                 onChange={handleChange}
                 onBlur={() => validateField('relationship')}
-                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${
-                  errors.relationship ? 'border-red-300' : 'border-gray-300'
-                }`}
+                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${errors.relationship ? 'border-red-300' : 'border-gray-300'
+                  }`}
               >
                 <option value="">Select Relationship</option>
                 <option value="head">Head</option>
@@ -462,9 +502,8 @@ const AddIndividualForm = () => {
                   value={values.phone}
                   onChange={handleChange}
                   onBlur={() => validateField('phone')}
-                  className={`w-full pl-10 pr-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500 ${
-                    errors.phone ? 'border-red-300' : 'border-gray-300'
-                  }`}
+                  className={`w-full pl-10 pr-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500 ${errors.phone ? 'border-red-300' : 'border-gray-300'
+                    }`}
                   placeholder="+251 9XX XXX XXX"
                 />
               </div>
@@ -484,9 +523,8 @@ const AddIndividualForm = () => {
                 value={values.email}
                 onChange={handleChange}
                 onBlur={() => validateField('email')}
-                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500 ${
-                  errors.email ? 'border-red-300' : 'border-gray-300'
-                }`}
+                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500 ${errors.email ? 'border-red-300' : 'border-gray-300'
+                  }`}
                 placeholder="example@domain.com"
               />
               {errors.email && (
@@ -504,7 +542,7 @@ const AddIndividualForm = () => {
             </div>
             <div>
               <h2 className="text-xl font-semibold text-gray-900">Photo</h2>
-              <p className="text-gray-600 text-sm">Upload individual's photo</p>
+              <p className="text-gray-600 text-sm">Upload individual's photo (Max 5MB)</p>
             </div>
           </div>
 
@@ -542,13 +580,22 @@ const AddIndividualForm = () => {
               <label className="block text-sm font-medium text-gray-700 mb-3">
                 Photo Preview
               </label>
-              <div className="w-48 h-60 border-2 border-gray-200 rounded-xl bg-gray-50 flex items-center justify-center mx-auto">
+              <div className="w-48 h-60 border-2 border-gray-200 rounded-xl bg-gray-50 flex items-center justify-center mx-auto relative">
                 {photoPreview ? (
-                  <img
-                    src={photoPreview}
-                    alt="Preview"
-                    className="w-full h-full object-cover rounded-xl"
-                  />
+                  <>
+                    <img
+                      src={photoPreview}
+                      alt="Preview"
+                      className="w-full h-full object-cover rounded-xl"
+                    />
+                    <button
+                      type="button"
+                      onClick={removePhoto}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
+                    >
+                      ×
+                    </button>
+                  </>
                 ) : (
                   <div className="text-center text-gray-500">
                     <Camera className="w-12 h-12 mx-auto mb-2 opacity-50" />
@@ -592,3 +639,30 @@ const AddIndividualForm = () => {
 };
 
 export default AddIndividualForm;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

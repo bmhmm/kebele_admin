@@ -1,5 +1,6 @@
 import React, { Suspense, useEffect } from 'react'
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { Toaster } from 'react-hot-toast'; //aditional one
 import { useAuth } from './contexts/AuthContext'
 import Layout from './components/layout/Layout'
 import LoadingSpinner from './components/ui/LoadingSpinner'
@@ -15,6 +16,9 @@ const ListIndividuals = React.lazy(() => import('./pages/ListIndividuals'))
 const ListFamilies = React.lazy(() => import('./pages/ListFamilies'))
 const Search = React.lazy(() => import('./pages/Search'))
 const Settings = React.lazy(() => import('./pages/Settings'))
+//importing editindividual.jsx
+import EditIndividual from './pages/EditIndividual';
+
 
 // Loading component for suspense fallback
 const PageLoader = () => (
@@ -55,7 +59,11 @@ const PublicRoute = ({ children }) => {
 
   if (isLoading) {
     return (
+
+
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+
+
         <div className="text-center">
           <LoadingSpinner size="lg" />
           <p className="mt-4 text-gray-600 font-medium">Checking authentication...</p>
@@ -102,6 +110,7 @@ function App() {
 
   return (
     <div className="App">
+      <Toaster position="top-right" />
       <Suspense fallback={<PageLoader />}>
         <Routes>
           {/* Public Routes */}
@@ -163,6 +172,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/edit-individual/:id" element={<EditIndividual />} />
           <Route
             path="/list-families"
             element={
@@ -190,9 +200,9 @@ function App() {
 
           {/* Fallback routes */}
           <Route path="/dashboard" element={<Navigate to="/" replace />} />
-          
+
           {/* 404 Not Found */}
-          
+
         </Routes>
       </Suspense>
     </div>
