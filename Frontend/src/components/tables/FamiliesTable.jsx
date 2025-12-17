@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Search, 
-  Eye, 
-  Edit, 
-  Users, 
+// In FamiliesTable.jsx
+import { useMembersPopup } from '../../contexts/MembersPopupContext';
+
+
+
+import {
+  Search,
+  Eye,
+  Edit,
+  Users,
   MoreVertical,
   ChevronLeft,
   ChevronRight,
@@ -11,10 +16,26 @@ import {
   Home,
   Phone,
   MapPin,
-  User
+  User, UserPlus, X
 } from 'lucide-react';
+// Add to your imports at the top:
+
+
 
 const FamiliesTable = () => {
+
+  const { isPopupOpen, selectedFamilyId, closePopup } = useMembersPopup();
+
+  // When selectedFamilyId changes, show popup
+  useEffect(() => {
+    if (selectedFamilyId) {
+      // Find the family and show popup
+      const family = families.find(f => f.id === selectedFamilyId);
+      if (family) {
+        showFamilyMembers(family);
+      }
+    }
+  }, [selectedFamilyId]);
   const [families, setFamilies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -28,111 +49,61 @@ const FamiliesTable = () => {
   const [selectedFamily, setSelectedFamily] = useState(null);
   const [showActionsMenu, setShowActionsMenu] = useState(null);
 
+  {/*modal state varibales*/ }
+
+  // Add to your existing useState declarations (near the top):
+  const [showMembersModal, setShowMembersModal] = useState(false);
+  const [selectedFamilyMembers, setSelectedFamilyMembers] = useState([]);
+  {/* ending of modal state variables*/ }
+
   // Mock data - replace with actual API call
+
+
+  {/* replacing the mock data with the real one*/ }
+
+  // Replace the ENTIRE useEffect (around line 50-100) with:
+
   useEffect(() => {
     const fetchFamilies = async () => {
       setLoading(true);
       try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Mock data
-        const mockData = [
-          {
-            id: 1,
-            familyNumber: 'FAM001',
+        // REAL API CALL
+        const response = await fetch('http://localhost:5000/api/families');
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch families');
+        }
+
+        const result = await response.json();
+
+        if (result.success) {
+          // Transform API data to match your frontend structure
+          const formattedFamilies = result.data.map(family => ({
+            id: family.id,
+            familyNumber: family.family_number,
             head: {
-              name: 'John Doe',
-              phone: '+251911223344'
+              name: family.head_name || `${family.head?.firstName} ${family.head?.lastName}`,
+              phone: family.head_phone || family.head?.phone
             },
-            members: [
-              { name: 'John Doe', relationship: 'Head' },
-              { name: 'Jane Doe', relationship: 'Spouse' },
-              { name: 'Mike Doe', relationship: 'Child' },
-              { name: 'Sarah Doe', relationship: 'Child' }
-            ],
+            members: [], // Will need separate API call for members
             house: {
-              houseNumber: 'H001',
-              zone: 'Zone 1',
-              address: 'Street 1, Ginjo Guduru'
-            }
-          },
-          {
-            id: 2,
-            familyNumber: 'FAM002',
-            head: {
-              name: 'Michael Smith',
-              phone: '+251922334455'
+              houseNumber: family.house_number,
+              zone: family.zone,
+              address: family.address
             },
-            members: [
-              { name: 'Michael Smith', relationship: 'Head' },
-              { name: 'Emily Smith', relationship: 'Spouse' }
-            ],
-            house: {
-              houseNumber: 'H002',
-              zone: 'Zone 2',
-              address: 'Street 2, Ginjo Guduru'
-            }
-          },
-          {
-            id: 3,
-            familyNumber: 'FAM003',
-            head: {
-              name: 'Robert Johnson',
-              phone: '+251933445566'
-            },
-            members: [
-              { name: 'Robert Johnson', relationship: 'Head' },
-              { name: 'Lisa Johnson', relationship: 'Spouse' },
-              { name: 'Tom Johnson', relationship: 'Child' },
-              { name: 'Anna Johnson', relationship: 'Child' },
-              { name: 'David Johnson', relationship: 'Child' }
-            ],
-            house: {
-              houseNumber: 'H003',
-              zone: 'Zone 1',
-              address: 'Street 3, Ginjo Guduru'
-            }
-          },
-          {
-            id: 4,
-            familyNumber: 'FAM004',
-            head: {
-              name: 'Sarah Williams',
-              phone: '+251944556677'
-            },
-            members: [
-              { name: 'Sarah Williams', relationship: 'Head' },
-              { name: 'James Williams', relationship: 'Spouse' },
-              { name: 'Olivia Williams', relationship: 'Child' }
-            ],
-            house: {
-              houseNumber: 'H004',
-              zone: 'Zone 3',
-              address: 'Street 4, Ginjo Guduru'
-            }
-          },
-          {
-            id: 5,
-            familyNumber: 'FAM005',
-            head: {
-              name: 'David Brown',
-              phone: '+251955667788'
-            },
-            members: [
-              { name: 'David Brown', relationship: 'Head' }
-            ],
-            house: {
-              houseNumber: 'H005',
-              zone: 'Zone 2',
-              address: 'Street 5, Ginjo Guduru'
-            }
-          }
-        ];
-        
-        setFamilies(mockData);
+            member_count: family.member_count || 0
+          }));
+
+          setFamilies(formattedFamilies);
+
+
+        } else {
+          throw new Error(result.message || 'Failed to load families');
+        }
       } catch (error) {
         console.error('Error fetching families:', error);
+        // Keep mock data as fallback for testing
+        // setFamilies(mockData); // Comment out when API works
       } finally {
         setLoading(false);
       }
@@ -140,14 +111,15 @@ const FamiliesTable = () => {
 
     fetchFamilies();
   }, []);
+  {/* ending replacing of it*/ }
 
   // Filter and search logic
   const filteredFamilies = families.filter(family => {
-    const matchesSearch = 
+    const matchesSearch =
       family.familyNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
       family.head.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       family.house.houseNumber.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesHead = !filters.head || family.head.name.toLowerCase().includes(filters.head.toLowerCase());
     const matchesZone = filters.zone === 'all' || family.house.zone === filters.zone;
     const matchesHouse = !filters.houseNumber || family.house.houseNumber.toLowerCase().includes(filters.houseNumber.toLowerCase());
@@ -170,6 +142,27 @@ const FamiliesTable = () => {
     setCurrentPage(1);
   };
 
+  // const handleAction = (action, family) => {
+  //   setShowActionsMenu(null);
+  //   switch (action) {
+  //     case 'view':
+  //       setSelectedFamily(family);
+  //       break;
+  //     case 'edit':
+  //       console.log('Edit family:', family);
+  //       break;
+  //     case 'members':
+  //       console.log('View members of:', family);
+  //       break;
+  //     case 'export':
+  //       console.log('Export data for:', family);
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  // };
+
+  {/*updating the handle action function */ }
   const handleAction = (action, family) => {
     setShowActionsMenu(null);
     switch (action) {
@@ -179,9 +172,16 @@ const FamiliesTable = () => {
       case 'edit':
         console.log('Edit family:', family);
         break;
-      case 'members':
-        console.log('View members of:', family);
+      case 'add-members':  // ADD THIS CASE
+        // Navigate to add members page
+        window.location.href = `/families/${family.id}/add-members`;
         break;
+      case 'members':  // ← ADD THIS CASE! This is for the Users icon
+        showFamilyMembers(family);  // Call the function to show members popup
+        break;
+      // case 'members':
+      //   console.log('View members of:', family);
+      //   break;
       case 'export':
         console.log('Export data for:', family);
         break;
@@ -189,6 +189,37 @@ const FamiliesTable = () => {
         break;
     }
   };
+  {/* ending updating handle action family*/ }
+
+  {/*starting is showing members function*/ }
+
+  // Add this function near other functions (after handleAction):
+  const showFamilyMembers = async (family) => {
+    try {
+      console.log('Showing members for family:', family.familyNumber);
+
+      // Fetch members from API
+      const response = await fetch(`http://localhost:5000/api/families/${family.id}/members`);
+      const result = await response.json();
+
+      if (result.success) {
+        console.log('Members found:', result.data);
+        // Show modal with members
+        setSelectedFamilyMembers(result.data);
+        setShowMembersModal(true);
+      } else {
+        console.log('No members found');
+        setSelectedFamilyMembers([]);
+        setShowMembersModal(true);
+      }
+    } catch (error) {
+      console.error('Error fetching members:', error);
+      setSelectedFamilyMembers([]);
+      setShowMembersModal(true);
+    }
+  };
+
+  {/*ending of showing members function*/ }
 
   const clearFilters = () => {
     setFilters({
@@ -220,9 +251,9 @@ const FamiliesTable = () => {
             <h2 className="text-xl font-semibold text-gray-900">Registered Families</h2>
             <p className="text-gray-600">Manage and view all families in the system</p>
           </div>
-          
+
           <div className="flex items-center space-x-4">
-           
+
           </div>
         </div>
 
@@ -334,8 +365,8 @@ const FamiliesTable = () => {
                 </tr>
               ) : (
                 paginatedFamilies.map((family) => (
-                  <tr 
-                    key={family.id} 
+                  <tr
+                    key={family.id}
                     className="hover:bg-gray-50 transition-colors duration-150 group"
                   >
                     <td className="py-4 px-6">
@@ -359,10 +390,14 @@ const FamiliesTable = () => {
                         </div>
                       </div>
                     </td>
+
                     <td className="py-4 px-6">
                       <div>
                         <div className="text-sm font-medium text-gray-900">
-                          {family.members.length} members
+                          {/*{family.members.length} members*/}
+                          {/*enabling fetch real count from count*/}
+                          {family.member_count || family.members?.length || 0} members
+                          {/*ending enabling fetch real count*/}
                         </div>
                         <div className="flex flex-wrap gap-1 mt-2">
                           {family.members.slice(0, 3).map((member, index) => (
@@ -382,6 +417,7 @@ const FamiliesTable = () => {
                         </div>
                       </div>
                     </td>
+
                     <td className="py-4 px-6">
                       <div className="flex items-center space-x-2">
                         <Home className="w-4 h-4 text-gray-400" />
@@ -424,7 +460,17 @@ const FamiliesTable = () => {
                         >
                           <Users className="w-4 h-4" />
                         </button>
-                        
+
+                        {/* adding addmembers button*/}
+                        <button
+                          onClick={() => handleAction('add-members', family)}
+                          className="p-2 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors duration-200"
+                          title="Add Members"
+                        >
+                          <UserPlus className="w-4 h-4" />
+                        </button>
+                        {/* ending of adding members button*/}
+
                         {/* More Actions Dropdown */}
                         <div className="relative">
                           <button
@@ -433,7 +479,7 @@ const FamiliesTable = () => {
                           >
                             <MoreVertical className="w-4 h-4" />
                           </button>
-                          
+
                           {showActionsMenu === family.id && (
                             <div className="absolute right-0 top-10 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
                               <button
@@ -463,7 +509,7 @@ const FamiliesTable = () => {
                 Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, filteredFamilies.length)} of{' '}
                 {filteredFamilies.length} results
               </div>
-              
+
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
@@ -472,21 +518,20 @@ const FamiliesTable = () => {
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
-                
+
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
                   <button
                     key={page}
                     onClick={() => setCurrentPage(page)}
-                    className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors duration-200 ${
-                      currentPage === page
-                        ? 'bg-green-600 text-white'
-                        : 'text-gray-700 hover:bg-gray-100'
-                    }`}
+                    className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors duration-200 ${currentPage === page
+                      ? 'bg-green-600 text-white'
+                      : 'text-gray-700 hover:bg-gray-100'
+                      }`}
                   >
                     {page}
                   </button>
                 ))}
-                
+
                 <button
                   onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                   disabled={currentPage === totalPages}
@@ -515,7 +560,7 @@ const FamiliesTable = () => {
                 </button>
               </div>
             </div>
-            
+
             <div className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Family Information */}
@@ -591,11 +636,10 @@ const FamiliesTable = () => {
                             <div className="font-medium text-gray-900">
                               {member.name}
                             </div>
-                            <div className={`text-xs font-medium ${
-                              member.relationship === 'Head' 
-                                ? 'text-green-600' 
-                                : 'text-gray-500'
-                            }`}>
+                            <div className={`text-xs font-medium ${member.relationship === 'Head'
+                              ? 'text-green-600'
+                              : 'text-gray-500'
+                              }`}>
                               {member.relationship}
                             </div>
                           </div>
@@ -609,6 +653,99 @@ const FamiliesTable = () => {
           </div>
         </div>
       )}
+
+      {/*member modal*/}
+      {/* Members Modal */}
+      {showMembersModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900">Family Members</h3>
+                  <p className="text-gray-600">
+                    {selectedFamilyMembers.length} member{selectedFamilyMembers.length !== 1 ? 's' : ''}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowMembersModal(false)}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            <div className="p-6">
+              {selectedFamilyMembers.length === 0 ? (
+                <div className="text-center py-8">
+                  <Users className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-600">No members found</p>
+                  <p className="text-sm text-gray-500 mt-1">
+                    This family has no additional members yet
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {selectedFamilyMembers.map((member, index) => (
+                    <div
+                      key={member.id || index}
+                      className="flex items-center space-x-3 p-4 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors duration-150"
+                    >
+                      <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                        {member.first_name?.[0] || member.firstName?.[0]}
+                        {member.last_name?.[0] || member.lastName?.[0]}
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-medium text-gray-900">
+                          {member.first_name || member.firstName} {member.last_name || member.lastName}
+                        </div>
+                        <div className="text-sm text-gray-600 mt-1 space-y-1">
+                          <div className="flex items-center space-x-2">
+                            <span className="capitalize">{member.relationship || 'member'}</span>
+                            {member.gender && (
+                              <span className="text-xs px-2 py-0.5 bg-gray-100 rounded-full">
+                                {member.gender}
+                              </span>
+                            )}
+                          </div>
+                          {member.phone && (
+                            <div className="flex items-center space-x-1">
+                              <Phone className="w-3 h-3" />
+                              <span>{member.phone}</span>
+                            </div>
+                          )}
+                          {member.age && (
+                            <div className="text-xs text-gray-500">Age: {member.age}</div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="p-6 border-t border-gray-200">
+              <div className="flex justify-end space-x-3">
+                {/* <button
+                  onClick={() => navigate(`/families/${family.id}/add-members`)}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+                >
+                  Add Members
+                </button> */}
+                <button
+                  onClick={() => setShowMembersModal(false)}
+                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {/*ending of member modal*/}
     </div>
   );
 };
