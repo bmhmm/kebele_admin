@@ -11,7 +11,7 @@ const AddHouse = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/*Header*/}
       <div className="flex items-center space-x-4">
         <Button
           variant="outline"
@@ -42,7 +42,7 @@ const AddHouse = () => {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-3">
@@ -56,7 +56,7 @@ const AddHouse = () => {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-3">
@@ -70,7 +70,7 @@ const AddHouse = () => {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-3">
