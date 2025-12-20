@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { useForm } from '../../hooks/useForm';
-import { 
-  Home, 
-  Building, 
-  User, 
-  Phone, 
+import {
+  Home,
+  Building,
+  User,
+  Phone,
   MapPin,
   Calendar,
   Info
 } from 'lucide-react';
 
-const AddHouseForm = () => {
+const AddHouseForm = ({ onHouseAdded }) => {
   const [selectedHouseType, setSelectedHouseType] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,7 +31,7 @@ const AddHouseForm = () => {
     { value: 'damaged', label: 'Damaged', color: 'bg-red-500' }
   ];
 
-  const { values, errors, handleChange, handleSubmit, validateField } = useForm({
+  const { values, errors, handleChange, handleSubmit, validateField, resetForm } = useForm({
     initialValues: {
       houseNumber: '',
       area: '',
@@ -60,22 +60,164 @@ const AddHouseForm = () => {
       if (!selectedStatus) errors.houseStatus = 'House status is required';
       return errors;
     },
+
+    // onSubmit: async (values) => {
+    //   setIsSubmitting(true);
+    //   try {
+    //     const formData = {
+    //       ...values,
+    //       houseType: selectedHouseType,
+    //       houseStatus: selectedStatus
+    //     };
+    //     await new Promise(resolve => setTimeout(resolve, 2000));
+    //     console.log('House form submitted:', formData);
+    //   } catch (error) {
+    //     console.error('Submission error:', error);
+    //   } finally {
+    //     setIsSubmitting(false);
+    //   }
+    // }
+
+    //     onSubmit: async (values) => {
+    //   setIsSubmitting(true);
+    //   try {
+    //     const formData = {
+    //       houseNumber: values.houseNumber,
+    //       area: values.area,
+    //       doorCount: values.doorCount,
+    //       constructionYear: values.constructionYear,
+    //       ownerName: values.ownerName,
+    //       ownerId: values.ownerId,
+    //       ownerPhone: values.ownerPhone,
+    //       zone: values.zone,
+    //       kebele: values.kebele,
+    //       city: values.city,
+    //       region: values.region,
+    //       remarks: values.remarks,
+    //       houseType: selectedHouseType,
+    //       houseStatus: selectedStatus
+    //     };
+
+    //     console.log('Sending to backend:', formData);
+
+    //     const response = await fetch('http://localhost:5000/api/houses', {
+    //       method: 'POST',
+    //       headers: { 'Content-Type': 'application/json' },
+    //       body: JSON.stringify(formData)
+    //     });
+
+    //     const result = await response.json();
+    //     console.log('Backend response:', result);
+
+    //     if (!response.ok) {
+    //       throw new Error(result.message || 'Failed to register house');
+    //     }
+
+    //     alert('House registered successfully!');
+
+    //     // Reset form if needed
+    //     // Call onHouseAdded callback if it exists
+    //     if (onHouseAdded) {
+    //       onHouseAdded();
+    //     }
+
+    //   } catch (error) {
+    //     console.error('Submission error:', error);
+    //     alert(`Error: ${error.message}`);
+    //   } finally {
+    //     setIsSubmitting(false);
+    //   }
+    // }
+    resetForm: () => {
+      // Manually reset form values
+      values.houseNumber = '';
+      values.area = '';
+      values.doorCount = '';
+      values.constructionYear = new Date().getFullYear();
+      values.ownerName = '';
+      values.ownerId = '';
+      values.ownerPhone = '';
+      values.zone = '';
+      values.region = '';
+      values.remarks = '';
+
+      // Reset selections
+      setSelectedHouseType('');
+      setSelectedStatus('');
+
+      // Clear errors
+      // If you have errors state, reset it here
+    },
     onSubmit: async (values) => {
       setIsSubmitting(true);
       try {
         const formData = {
-          ...values,
-          houseType: selectedHouseType,
-          houseStatus: selectedStatus
+          houseNumber: values.houseNumber,
+          area: values.area,
+          doorCount: values.doorCount,
+          constructionYear: values.constructionYear,
+          ownerName: values.ownerName,
+          ownerId: values.ownerId || '',
+          ownerPhone: values.ownerPhone,
+          zone: values.zone,
+          kebele: values.kebele,
+          city: values.city,
+          region: values.region,
+          remarks: values.remarks || '',
+          propertyType: selectedHouseType,
+          status: selectedStatus
         };
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        console.log('House form submitted:', formData);
+
+        console.log('Sending to backend:', formData);
+
+        const response = await fetch('http://localhost:5000/api/houses', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
+        });
+
+        const result = await response.json();
+        console.log('Backend response:', result);
+
+        if (!response.ok) {
+          throw new Error(result.message || 'Failed to register house');
+        }
+
+        alert('House registered successfully!');
+
+        // RESET THE FORM - Update the values directly
+        values.houseNumber = '';
+        values.area = '';
+        values.doorCount = '';
+        values.constructionYear = new Date().getFullYear();
+        values.ownerName = '';
+        values.ownerId = '';
+        values.ownerPhone = '';
+        values.zone = '';
+        values.region = '';
+        values.remarks = '';
+
+        // Reset state variables
+        setSelectedHouseType('');
+        setSelectedStatus('');
+
+        // Call onHouseAdded to refresh stats
+        if (onHouseAdded) {
+          onHouseAdded();
+        }
+
+        // Clear any errors
+        // You might need to reset errors if you're using error state
+
       } catch (error) {
         console.error('Submission error:', error);
+        alert(`Error: ${error.message}`);
       } finally {
         setIsSubmitting(false);
       }
     }
+
+
   });
 
   return (
@@ -113,9 +255,8 @@ const AddHouseForm = () => {
                 value={values.houseNumber}
                 onChange={handleChange}
                 onBlur={() => validateField('houseNumber')}
-                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${
-                  errors.houseNumber ? 'border-red-300' : 'border-gray-300'
-                }`}
+                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${errors.houseNumber ? 'border-red-300' : 'border-gray-300'
+                  }`}
                 placeholder="Enter house number"
               />
               {errors.houseNumber && (
@@ -135,9 +276,8 @@ const AddHouseForm = () => {
                 onBlur={() => validateField('area')}
                 min="1"
                 step="0.1"
-                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${
-                  errors.area ? 'border-red-300' : 'border-gray-300'
-                }`}
+                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${errors.area ? 'border-red-300' : 'border-gray-300'
+                  }`}
                 placeholder="Enter area"
               />
               {errors.area && (
@@ -156,9 +296,8 @@ const AddHouseForm = () => {
                 onChange={handleChange}
                 onBlur={() => validateField('doorCount')}
                 min="1"
-                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${
-                  errors.doorCount ? 'border-red-300' : 'border-gray-300'
-                }`}
+                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${errors.doorCount ? 'border-red-300' : 'border-gray-300'
+                  }`}
                 placeholder="Enter door count"
               />
               {errors.doorCount && (
@@ -180,9 +319,8 @@ const AddHouseForm = () => {
                   onBlur={() => validateField('constructionYear')}
                   min="1900"
                   max="2099"
-                  className={`w-full pl-10 pr-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${
-                    errors.constructionYear ? 'border-red-300' : 'border-gray-300'
-                  }`}
+                  className={`w-full pl-10 pr-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${errors.constructionYear ? 'border-red-300' : 'border-gray-300'
+                    }`}
                 />
               </div>
               {errors.constructionYear && (
@@ -202,11 +340,10 @@ const AddHouseForm = () => {
                   key={type.value}
                   type="button"
                   onClick={() => setSelectedHouseType(type.value)}
-                  className={`p-4 border-2 rounded-xl text-center transition-all duration-200 ${
-                    selectedHouseType === type.value
-                      ? 'border-blue-500 bg-blue-50 shadow-sm'
-                      : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                  }`}
+                  className={`p-4 border-2 rounded-xl text-center transition-all duration-200 ${selectedHouseType === type.value
+                    ? 'border-blue-500 bg-blue-50 shadow-sm'
+                    : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                    }`}
                 >
                   <div className="text-2xl mb-2">{type.icon}</div>
                   <div className="text-sm font-medium text-gray-900">{type.label}</div>
@@ -230,11 +367,10 @@ const AddHouseForm = () => {
                   key={status.value}
                   type="button"
                   onClick={() => setSelectedStatus(status.value)}
-                  className={`p-4 border-2 rounded-xl text-center transition-all duration-200 ${
-                    selectedStatus === status.value
-                      ? 'border-blue-500 bg-blue-50 shadow-sm'
-                      : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                  }`}
+                  className={`p-4 border-2 rounded-xl text-center transition-all duration-200 ${selectedStatus === status.value
+                    ? 'border-blue-500 bg-blue-50 shadow-sm'
+                    : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                    }`}
                 >
                   <div className="flex items-center justify-center space-x-2">
                     <div className={`w-3 h-3 rounded-full ${status.color}`}></div>
@@ -272,9 +408,8 @@ const AddHouseForm = () => {
                 value={values.ownerName}
                 onChange={handleChange}
                 onBlur={() => validateField('ownerName')}
-                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${
-                  errors.ownerName ? 'border-red-300' : 'border-gray-300'
-                }`}
+                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${errors.ownerName ? 'border-red-300' : 'border-gray-300'
+                  }`}
                 placeholder="Enter owner name"
               />
               {errors.ownerName && (
@@ -308,9 +443,8 @@ const AddHouseForm = () => {
                   value={values.ownerPhone}
                   onChange={handleChange}
                   onBlur={() => validateField('ownerPhone')}
-                  className={`w-full pl-10 pr-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500 ${
-                    errors.ownerPhone ? 'border-red-300' : 'border-gray-300'
-                  }`}
+                  className={`w-full pl-10 pr-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500 ${errors.ownerPhone ? 'border-red-300' : 'border-gray-300'
+                    }`}
                   placeholder="+251 9XX XXX XXX"
                 />
               </div>
@@ -344,9 +478,8 @@ const AddHouseForm = () => {
                 value={values.zone}
                 onChange={handleChange}
                 onBlur={() => validateField('zone')}
-                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${
-                  errors.zone ? 'border-red-300' : 'border-gray-300'
-                }`}
+                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${errors.zone ? 'border-red-300' : 'border-gray-300'
+                  }`}
                 placeholder="Enter zone"
               />
               {errors.zone && (
@@ -392,9 +525,8 @@ const AddHouseForm = () => {
                 value={values.region}
                 onChange={handleChange}
                 onBlur={() => validateField('region')}
-                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${
-                  errors.region ? 'border-red-300' : 'border-gray-300'
-                }`}
+                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${errors.region ? 'border-red-300' : 'border-gray-300'
+                  }`}
                 placeholder="Enter region"
               />
               {errors.region && (
@@ -433,8 +565,15 @@ const AddHouseForm = () => {
 
         {/* Form Actions */}
         <div className="flex justify-end space-x-4 pt-6">
+          {/* <button
+            type="button"
+            className="px-8 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors duration-200 font-medium"
+          >
+            Cancel
+          </button> */}
           <button
             type="button"
+            onClick={resetForm}
             className="px-8 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors duration-200 font-medium"
           >
             Cancel
