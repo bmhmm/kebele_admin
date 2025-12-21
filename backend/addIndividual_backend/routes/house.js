@@ -132,7 +132,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// POST /api/houses - Create new house
+{/*router.post new*/}
 router.post('/', async (req, res) => {
   try {
     const {
@@ -148,22 +148,84 @@ router.post('/', async (req, res) => {
       propertyType,
       status,
       rooms,
-      areaSqm,
+      area,
       constructionYear,
-      hasElectricity,
-      hasWater,
+      hasElectricity = true,
+      hasWater = true,
       latitude,
       longitude,
       notes
     } = req.body;
     
+    console.log('=== HOUSE DATA FROM FRONTEND ===');
+    console.log('propertyType:', propertyType);
+    console.log('status:', status);
+    console.log('rooms:', rooms);
+    console.log('area:', area);
+    console.log('constructionYear:', constructionYear);
+    console.log('Full body:', req.body);
+    
     // Validate required fields
     if (!houseNumber || !zone || !kebele || !city || !region) {
       return res.status(400).json({
         success: false,
-        message: 'Missing required fields: houseNumber, zone, kebele, city, and region are required'
+        message: 'Missing required fields'
       });
     }
+    
+    // Helper functions
+    // const normalizeStatus = (status) => {
+    //   if (!status || status.trim() === '') return 'vacant';
+    //   return status.replace(/-/g, '_');
+    // };
+    
+    // const normalizePropertyType = (type) => {
+    //   if (!type || type.trim() === '') return 'residential';
+    //   return type;
+    // };
+    const normalizePropertyType = (type) => {
+  if (!type || type.trim() === '') return 'residential';
+  
+  const validTypes = ['residential', 'commercial', 'mixed', 'government', 'religious', 'other'];
+  const normalized = type.toLowerCase();
+  
+  if (validTypes.includes(normalized)) {
+    return normalized;
+  }
+  
+  console.warn(`Invalid property type: ${type}, defaulting to residential`);
+  return 'residential';
+};
+
+const normalizeStatus = (status) => {
+  if (!status || status.trim() === '') return 'vacant';
+  
+  // Convert hyphen to underscore
+  const normalized = status.toLowerCase().replace(/-/g, '_');
+  
+  // Map frontend values to database values
+  const statusMap = {
+    'under-construction': 'under_construction',
+    'under_construction': 'under_construction',
+    'occupied': 'occupied',
+    'vacant': 'vacant',
+    'abandoned': 'abandoned',
+    'damaged': 'damaged'
+  };
+  
+  return statusMap[normalized] || 'vacant';
+};
+    
+    // const parseNumber = (value) => {
+    //   if (value === undefined || value === null || value === '') return null;
+    //   const num = Number(value);
+    //   return isNaN(num) ? null : num;
+    // };
+    const parseNumber = (value) => {
+  if (value === undefined || value === null || value === '') return null;
+  const num = Number(value);
+  return isNaN(num) ? null : num;
+};
     
     // Check if house number already exists
     const checkQuery = 'SELECT id FROM houses WHERE house_number = ?';
@@ -183,32 +245,53 @@ router.post('/', async (req, res) => {
         });
       }
       
-      // Insert new house
+      // Insert new house with PROPER values
       const insertQuery = `
         INSERT INTO houses (
           house_number, zone, kebele, city, region, address, 
           owner_name, owner_phone, owner_id_number, property_type, 
-          status, rooms, area_sqm, construction_year, has_electricity, 
+          status, rooms, area, construction_year, has_electricity, 
           has_water, latitude, longitude, notes
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
       
       const values = [
-        houseNumber, zone, kebele, city, region, address || null,
-        ownerName || null, ownerPhone || null, ownerIdNumber || null,
-        propertyType || 'residential', status || 'vacant', rooms || 1,
-        areaSqm || null, constructionYear || null, hasElectricity !== false,
-        hasWater !== false, latitude || null, longitude || null, notes || null
+        houseNumber, 
+        zone, 
+        kebele, 
+        city, 
+        region, 
+        address || null,
+        ownerName || null, 
+        ownerPhone || null, 
+        ownerIdNumber || null,
+        normalizePropertyType(propertyType),
+        normalizeStatus(status),
+        // parseNumber(rooms),
+        // parseNumber(area),
+        rooms ? parseInt(rooms) : 1, // If rooms is provided, parse it
+  // AREA - REQUIRED, should not be null  
+  area ? parseFloat(area) : null, 
+        parseNumber(constructionYear),
+        hasElectricity !== false,
+        hasWater !== false,
+        latitude || null, 
+        longitude || null, 
+        notes || null
       ];
+      
+      console.log('Inserting values:', values);
       
       db.query(insertQuery, values, (insertErr, insertResults) => {
         if (insertErr) {
           console.error('Database error:', insertErr);
           return res.status(500).json({
             success: false,
-            message: 'Database error creating house'
+            message: 'Database error creating house: ' + insertErr.message
           });
         }
+        
+        console.log('House created successfully:', insertResults.insertId);
         
         res.json({
           success: true,
@@ -225,10 +308,142 @@ router.post('/', async (req, res) => {
     console.error('Error creating house:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error creating house'
+      message: 'Server error creating house: ' + error.message
     });
   }
 });
+{/*end of new router.post*/}
+// POST /api/houses - Create new house
+// router.post('/', async (req, res) => {
+//   try {
+//     const {
+//       houseNumber,
+//       zone,
+//       kebele,
+//       city,
+//       region,
+//       address,
+//       ownerName,
+//       ownerPhone,
+//       ownerIdNumber,
+//       propertyType,
+//       status,
+//       rooms,
+//       area,
+//       constructionYear,
+//       hasElectricity,
+//       hasWater,
+//       latitude,
+//       longitude,
+//       notes
+//     } = req.body;
+    
+//     // Validate required fields
+//     if (!houseNumber || !zone || !kebele || !city || !region) {
+//       return res.status(400).json({
+//         success: false,
+//         message: 'Missing required fields: houseNumber, zone, kebele, city, and region are required'
+//       });
+//     }
+    
+//     // Check if house number already exists
+//     const checkQuery = 'SELECT id FROM houses WHERE house_number = ?';
+//     db.query(checkQuery, [houseNumber], (checkErr, checkResults) => {
+//       if (checkErr) {
+//         console.error('Database error:', checkErr);
+//         return res.status(500).json({
+//           success: false,
+//           message: 'Database error checking house number'
+//         });
+//       }
+      
+//       if (checkResults.length > 0) {
+//         return res.status(400).json({
+//           success: false,
+//           message: 'House number already exists'
+//         });
+//       }
+      
+//       // Insert new house
+//       // const insertQuery = `
+//       //   INSERT INTO houses (
+//       //     house_number, zone, kebele, city, region, address, 
+//       //     owner_name, owner_phone, owner_id_number, property_type, 
+//       //     status, rooms, area, construction_year, has_electricity, 
+//       //     has_water, latitude, longitude, notes
+//       //   ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+//       // `;
+      
+//       const insertQuery = `
+//   INSERT INTO houses (
+//     house_number, zone, kebele, city, region, address, 
+//     owner_name, owner_phone, owner_id_number, property_type, 
+//     status, rooms, area, construction_year, has_electricity, 
+//     has_water, latitude, longitude, notes
+//   ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+// `;
+//       // const values = [
+//       //   houseNumber, zone, kebele, city, region, address || null,
+//       //   ownerName || null, ownerPhone || null, ownerIdNumber || null,
+//       //   propertyType || 'residential', status === 'under_construction' ? 'under_construction' : status, rooms || 1,
+//       //   area || null, constructionYear || null, hasElectricity !== false,
+//       //   hasWater !== false, latitude || null, longitude || null, notes || null
+//       // ];
+
+//       {/*new const values*/}
+//       const values = [
+//   houseNumber, 
+//   zone, 
+//   kebele, 
+//   city, 
+//   region, 
+//   address || null,
+//   ownerName || null, 
+//   ownerPhone || null, 
+//   ownerIdNumber || null,
+//   propertyType || 'residential', 
+//   status || 'vacant',
+//   // Parse rooms as integer, only if provided
+//   (rooms !== undefined && rooms !== null && rooms !== '') ? parseInt(rooms) : null,
+//   // Parse area as float, only if provided
+//   (area !== undefined && area !== null && area !== '') ? parseFloat(area) : null,
+//   constructionYear ? parseInt(constructionYear) : null, 
+//   hasElectricity !== false,
+//   hasWater !== false, 
+//   latitude || null, 
+//   longitude || null, 
+//   notes || null
+// ];
+//       {/*end of const values*/}
+      
+//       db.query(insertQuery, values, (insertErr, insertResults) => {
+//         if (insertErr) {
+//           console.error('Database error:', insertErr);
+//           return res.status(500).json({
+//             success: false,
+//             message: 'Database error creating house'
+//           });
+//         }
+        
+//         res.json({
+//           success: true,
+//           message: 'House registered successfully',
+//           data: {
+//             id: insertResults.insertId,
+//             houseNumber
+//           }
+//         });
+//       });
+//     });
+    
+//   } catch (error) {
+//     console.error('Error creating house:', error);
+//     res.status(500).json({
+//       success: false,
+//       message: 'Server error creating house'
+//     });
+//   }
+// });
 
 // GET /api/houses/search - Search houses
 router.get('/search', async (req, res) => {
