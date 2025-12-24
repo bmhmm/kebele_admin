@@ -665,7 +665,7 @@ const Dashboard = () => {
   };
 
   const handleSystemSettings = () => {
-    window.location.href = '/settings';
+    window.location.href = './individuals';
     console.log('Opening system settings...');
   };
 
