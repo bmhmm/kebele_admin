@@ -334,27 +334,189 @@
 
 
 // contexts/AuthContext.jsx
+// import React, { createContext, useContext, useState, useEffect } from 'react';
+// import api from '../services/api';
+
+// const AuthContext = createContext();
+
+// export const AuthProvider = ({ children }) => {
+//   const [user, setUser] = useState(null);
+//   const [loading, setLoading] = useState(true);
+//   const [token, setToken] = useState(localStorage.getItem('kebele_token'));
+
+//   // Check if user is authenticated on app load
+//   useEffect(() => {
+//     const initializeAuth = async () => {
+//       const storedToken = localStorage.getItem('kebele_token');
+//       const storedUser = localStorage.getItem('kebele_user');
+
+//       if (storedToken && storedUser) {
+//         // Set token in axios headers
+//         api.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+//         setToken(storedToken);
+//         setUser(JSON.parse(storedUser));
+//       }
+
+//       setLoading(false);
+//     };
+
+//     initializeAuth();
+//   }, []);
+
+//   const login = async (email, password) => {
+//     try {
+//       const response = await api.post('/auth/login', { email, password });
+
+//       if (response.data.success) {
+//         const { token, user, redirectTo } = response.data;
+
+//         // Store token and user
+//         localStorage.setItem('kebele_token', token);
+//         localStorage.setItem('kebele_user', JSON.stringify(user));
+
+//         // Set axios default headers
+//         api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+//         setToken(token);
+//         setUser(user);
+
+//         return {
+//           success: true,
+//           user,
+//           redirectTo
+//         };
+//       } else {
+//         return {
+//           success: false,
+//           message: response.data.message
+//         };
+//       }
+//     } catch (error) {
+//       console.error('Login error:', error);
+//       const message = error.response?.data?.message || 'Login failed. Please try again.';
+//       return {
+//         success: false,
+//         message
+//       };
+//     }
+//   };
+
+//   const logout = () => {
+//     // Clear localStorage
+//     localStorage.removeItem('kebele_token');
+//     localStorage.removeItem('kebele_user');
+
+//     // Clear axios headers
+//     delete api.defaults.headers.common['Authorization'];
+
+//     // Clear state
+//     setToken(null);
+//     setUser(null);
+//   };
+
+//   const checkPermission = (permission) => {
+//     if (!user || !user.permissions) return false;
+//     return user.permissions[permission] || false;
+//   };
+
+//   const value = {
+//     user,
+//     token,
+//     login,
+//     logout,
+//     loading,
+//     isAuthenticated: !!token && !!user,
+//     checkPermission
+//   };
+
+//   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+// };
+
+// export const useAuth = () => {
+//   const context = useContext(AuthContext);
+//   if (!context) {
+//     throw new Error('useAuth must be used within an AuthProvider');
+//   }
+//   return context;
+// };
+
+
+
+
+
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import api from '../services/api';
+
+// Define permissions for each role
+const getPermissionsByRole = (role) => {
+  const permissions = {
+    'Administrator': {
+      canEditSettings: true,
+      canManageUsers: true,
+      canAddCitizens: true,
+      canEditCitizens: true,
+      canDeleteCitizens: true,
+      canIssueIDCards: true,
+      canViewReports: true,
+      canExportData: true,
+      canViewAuditLogs: true,
+      dashboardPath: '/',
+    },
+    'Data Entry Clerk': {
+      canEditSettings: false,
+      canManageUsers: false,
+      canAddCitizens: true,
+      canEditCitizens: true,
+      canDeleteCitizens: false,
+      canIssueIDCards: true,
+      canViewReports: true,
+      canExportData: false,
+      canViewAuditLogs: false,
+      dashboardPath: '/',
+    },
+    'View Only': {
+      canEditSettings: false,
+      canManageUsers: false,
+      canAddCitizens: false,
+      canEditCitizens: false,
+      canDeleteCitizens: false,
+      canIssueIDCards: false,
+      canViewReports: true,
+      canExportData: false,
+      canViewAuditLogs: false,
+      dashboardPath: '/',
+    }
+  };
+
+  return permissions[role] || permissions['View Only'];
+};
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [token, setToken] = useState(localStorage.getItem('kebele_token'));
 
-  // Check if user is authenticated on app load
+  // Initialize auth state from localStorage
   useEffect(() => {
     const initializeAuth = async () => {
-      const storedToken = localStorage.getItem('kebele_token');
+      const token = localStorage.getItem('kebele_token');
       const storedUser = localStorage.getItem('kebele_user');
 
-      if (storedToken && storedUser) {
-        // Set token in axios headers
-        api.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
-        setToken(storedToken);
-        setUser(JSON.parse(storedUser));
+      if (token && storedUser) {
+        try {
+          // Set the token in axios headers
+          api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+          // Parse and set user
+          const parsedUser = JSON.parse(storedUser);
+          setUser(parsedUser);
+        } catch (error) {
+          console.error('Error parsing stored user:', error);
+          localStorage.removeItem('kebele_token');
+          localStorage.removeItem('kebele_user');
+        }
       }
 
       setLoading(false);
@@ -365,10 +527,17 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await api.post('/auth/login', { email, password });
+      console.log('Attempting login with:', { email, password });
+
+      const response = await api.post('/auth/login', {
+        email,
+        password
+      });
+
+      console.log('Login response:', response.data);
 
       if (response.data.success) {
-        const { token, user, redirectTo } = response.data;
+        const { token, user } = response.data;
 
         // Store token and user
         localStorage.setItem('kebele_token', token);
@@ -377,23 +546,34 @@ export const AuthProvider = ({ children }) => {
         // Set axios default headers
         api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-        setToken(token);
+        // Update state
         setUser(user);
 
         return {
           success: true,
           user,
-          redirectTo
+          redirectTo: user.permissions.dashboardPath || '/'
         };
       } else {
         return {
           success: false,
-          message: response.data.message
+          message: response.data.message || 'Login failed'
         };
       }
     } catch (error) {
-      console.error('Login error:', error);
-      const message = error.response?.data?.message || 'Login failed. Please try again.';
+      console.error('Login error details:', error);
+
+      // More detailed error message
+      let message = 'Login failed. Please try again.';
+
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        message = error.response.data?.message || `Server error: ${error.response.status}`;
+      } else if (error.request) {
+        // The request was made but no response was received
+        message = 'No response from server. Please check your connection.';
+      }
+
       return {
         success: false,
         message
@@ -410,8 +590,10 @@ export const AuthProvider = ({ children }) => {
     delete api.defaults.headers.common['Authorization'];
 
     // Clear state
-    setToken(null);
     setUser(null);
+
+    // Optional: Redirect to login page
+    window.location.href = '/login';
   };
 
   const checkPermission = (permission) => {
@@ -421,11 +603,10 @@ export const AuthProvider = ({ children }) => {
 
   const value = {
     user,
-    token,
     login,
     logout,
     loading,
-    isAuthenticated: !!token && !!user,
+    isAuthenticated: !!user,
     checkPermission
   };
 
