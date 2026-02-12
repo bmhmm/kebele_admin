@@ -174,8 +174,8 @@ const ListHouses = () => {
                         Back
                     </Button>
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900">Houses Management</h1>
-                        <p className="text-gray-600">View and manage all registered houses</p>
+                        <h1 className="text-3xl font-bold text-blue-300">Houses Management</h1>
+                        <p className="text-gray-400">View and manage all registered houses</p>
                     </div>
                 </div>
 

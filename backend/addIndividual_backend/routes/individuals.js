@@ -13,6 +13,7 @@ router.put('/:id', upload.single('photo'), individualController.updateIndividual
 router.delete('/:id', individualController.deleteIndividual);
 router.patch('/:id/restore', individualController.restoreIndividual);
 router.post('/cleanup-files', individualController.cleanupOrphanedFiles);
+router.get('/stats/families', individualController.getFamilyStatistics);
 
 // Test route for debugging
 router.get('/test/connection', (req, res) => {

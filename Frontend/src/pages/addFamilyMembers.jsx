@@ -16,9 +16,11 @@ import {
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
+import { useMembersPopup } from '../contexts/MembersPopupContext';
 
 const AddFamilyMembers = () => {
     const { familyId } = useParams();
+    const { openPopup } = useMembersPopup();
     const navigate = useNavigate();
 
     // States
@@ -179,12 +181,16 @@ const AddFamilyMembers = () => {
 
     // Handle back
     const handleBack = () => {
-        navigate(`/families`);
+        navigate(`/list-families`);
     };
 
     // Handle view family
     const handleViewFamily = () => {
-        navigate(`/families/${familyId}`);
+        // navigate(`/families/${familyId}`);
+        // navigate(`/families?showMembers=${familyId}`);
+        openPopup(familyId);
+        navigate('/families');
+
     };
 
     if (isLoading) {
@@ -238,14 +244,14 @@ const AddFamilyMembers = () => {
                     </div>
 
                     <div className="flex items-center space-x-2">
-                        <Button
+                        {/* <Button
                             variant="outline"
-                            size="sm"
+                            size="sm" 
                             onClick={handleViewFamily}
                             startIcon={<UsersIcon className="w-4 h-4" />}
                         >
                             View Family
-                        </Button>
+                        </Button> */}
                     </div>
                 </div>
 
@@ -570,19 +576,19 @@ const AddFamilyMembers = () => {
                     </Button>
 
                     <div className="flex space-x-3">
-                        <Button
+                        {/* <Button
                             variant="outline"
                             onClick={handleViewFamily}
                             startIcon={<UsersIcon className="w-4 h-4" />}
                         >
                             View Family Details
-                        </Button>
-                        <Button
+                        </Button> */}
+                        {/* <Button
                             onClick={() => navigate('/families/add')}
                             startIcon={<UserPlus className="w-4 h-4" />}
                         >
                             Create Another Family
-                        </Button>
+                        </Button> */}
                     </div>
                 </div>
             </div>

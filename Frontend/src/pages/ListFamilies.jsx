@@ -265,8 +265,8 @@ const ListFamilies = () => {
             Back
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-orange-100">Families</h1>
-            <p className="text-blue-100">Manage and view all registered families</p>
+            <h1 className="text-3xl font-bold text-blue-300">Families</h1>
+            <p className="text-gray-400">Manage and view all registered families</p>
           </div>
         </div>
 

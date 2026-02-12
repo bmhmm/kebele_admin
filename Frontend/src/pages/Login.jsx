@@ -303,25 +303,50 @@ const LoginPage = () => {
   };
 
   // Demo credentials for quick testing
+  // const demoCredentials = [
+  //   {
+  //     role: "Administrator",
+  //     email: "admin@ginjoguduru.gov.et",
+  //     password: "admin123",
+  //     description: "Full system access",
+  //     color: "from-purple-900 to-purple-600"
+  //   },
+  //   {
+  //     role: "Data Entry Clerk",
+  //     email: "clerk@ginjoguduru.gov.et",
+  //     password: "clerk123",
+  //     description: "Can add/edit data",
+  //     color: "from-blue-900 to-blue-600"
+  //   },
+  //   {
+  //     role: "View Only",
+  //     email: "viewer@ginjoguduru.gov.et",
+  //     password: "viewer123",
+  //     description: "Read-only access",
+  //     color: "from-gray-900 to-gray-600"
+  //   },
+  // ];
+  //admin@ginjoguduru.gov.et
+  //admin123
   const demoCredentials = [
     {
       role: "Administrator",
       email: "admin@ginjoguduru.gov.et",
-      password: "admin123",
+      password: "admin123",  // Make sure this matches your database
       description: "Full system access",
       color: "from-purple-900 to-purple-600"
     },
     {
       role: "Data Entry Clerk",
       email: "clerk@ginjoguduru.gov.et",
-      password: "clerk123",
+      password: "clerk123",  // Make sure this matches your database
       description: "Can add/edit data",
       color: "from-blue-900 to-blue-600"
     },
     {
       role: "View Only",
       email: "viewer@ginjoguduru.gov.et",
-      password: "viewer123",
+      password: "viewer123",  // Make sure this matches your database
       description: "Read-only access",
       color: "from-gray-900 to-gray-600"
     },
@@ -453,7 +478,7 @@ const LoginPage = () => {
 
               {/* Role Information (Shows when demo credentials are selected) */}
               {showRoleInfo && (
-                <div className="p-3 bg-gradient-to-r from-orange-900/30 to-orange-700/20 border border-orange-500/40 rounded-xl">
+                <div className="p-3 bg-gradient-to-r from-blue-700/50 to-blue-900/50 border border-orange-500/40 rounded-xl">
                   <div className="flex items-center gap-2 mb-1">
                     <User className="w-4 h-4 text-orange-300" />
                     <span className="text-orange-200 font-semibold">
@@ -478,8 +503,8 @@ const LoginPage = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className={`w-full pl-10 pr-4 py-3 rounded-xl bg-white/80 border focus:ring-2 focus:ring-gray-600 focus:border-transparent text-gray-900 placeholder-gray-600 transition-all duration-200 ${errors.email
-                        ? "border-red-500/60"
-                        : "border-orange-400/60"
+                      ? "border-red-500/60"
+                      : "border-orange-400/60"
                       }`}
                     placeholder="Enter your email"
                     required
@@ -502,8 +527,8 @@ const LoginPage = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className={`w-full pl-10 pr-12 py-3 rounded-xl bg-white/80 border focus:ring-2 focus:ring-gray-600 focus:border-transparent text-gray-900 placeholder-gray-600 transition-all duration-200 ${errors.password
-                        ? "border-red-500/60"
-                        : "border-orange-400/60"
+                      ? "border-red-500/60"
+                      : "border-orange-400/60"
                       }`}
                     placeholder="Enter your password"
                     required

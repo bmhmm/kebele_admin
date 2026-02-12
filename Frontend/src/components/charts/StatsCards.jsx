@@ -391,7 +391,7 @@
 //                 className={clsx(
 //                   'px-3 py-1.5 text-sm font-medium rounded-lg transition-colors duration-200',
 //                   timeframe === option.value
-//                     ? 'bg-white text-gray-900 shadow-sm'
+//                      'bg-white text-gray-900 shadow-sm'
 //                     : 'text-gray-600 hover:text-gray-900'
 //                 )}
 //               >
@@ -677,7 +677,7 @@ const StatsCards = ({
   console.log('Computed stats:', stats);
 
   return (
-    <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50/50">
+    <Card className="border-0 shadow-xl bg-gradient-to-br from-white-50 to-orange-900">
       <CardHeader className="pb-2">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
@@ -688,7 +688,7 @@ const StatsCards = ({
           </div>
           {/* REMOVED: Timeframe buttons section */}
           {/* Only keep Export button if you want it */}
-          <div className="flex flex-wrap gap-2">
+          {/* <div className="flex flex-wrap gap-2">
             <Button
               onClick={onExport}
               variant="outline"
@@ -698,7 +698,7 @@ const StatsCards = ({
             >
               Export
             </Button>
-          </div>
+          </div> */}
         </div>
       </CardHeader>
       <CardContent>

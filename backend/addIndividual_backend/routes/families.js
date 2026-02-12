@@ -4,7 +4,7 @@ const familyController = require('../controllers/familyController');
 
 // Family routes
 router.get('/', familyController.getAllFamilies);
-router.get('/stats', familyController.getFamilyStats);
+router.get('/stats', familyController.getFamilyStatistics);
 router.get('/search', familyController.searchFamilies);
 router.get('/available-individuals', familyController.searchAvailableIndividuals);
 router.get('/:id', familyController.getFamilyById);
@@ -23,5 +23,8 @@ router.get('/test/connection', (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
+
+router.get('/check-individuals', familyController.checkIndividualsStatus);
+
 
 module.exports = router;

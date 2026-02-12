@@ -28,13 +28,13 @@ const Family = {
       familyData.houseNumber,
       familyData.zone,
       familyData.address,
-      familyData.headId
+      familyData.head_id
     ];
 
     db.query(query, values, callback);
   },
 
-  // Get all active families
+  //Get all active families
   getAll: (callback) => {
     const query = `
       SELECT f.*, 
@@ -52,6 +52,8 @@ const Family = {
     `;
     db.query(query, callback);
   },
+
+  
 
   // Get family by ID with members
   getById: (id, callback) => {
@@ -102,7 +104,7 @@ const Family = {
       familyData.houseNumber,
       familyData.zone,
       familyData.address,
-      familyData.headId,
+      familyData.head_id,
       id
     ];
 

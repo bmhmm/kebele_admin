@@ -759,6 +759,7 @@ const IndividualsTable = ({ filters, onSearch, onRefreshStats }) => {
         break;
       case 'issue_id':
         console.log('Issue ID for:', individual);
+        window.location.href = `/add-id-card`;
         // Implement ID issuance logic
         break;
       case 'export':
@@ -871,6 +872,7 @@ const IndividualsTable = ({ filters, onSearch, onRefreshStats }) => {
               value={searchTerm}
               onChange={handleSearch}
               className="w-full pl-10 pr-10 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900"
+
             />
             {searchTerm && (
               <button
@@ -909,12 +911,12 @@ const IndividualsTable = ({ filters, onSearch, onRefreshStats }) => {
             </div>
           )}
         </div>
-      </div>
+      </div >
 
       {/* Table */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+      < div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden" >
         {/* Table Header */}
-        <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+        < div className="px-6 py-4 border-b border-gray-200 bg-gray-50" >
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg font-semibold text-gray-900">Individuals List</h3>
@@ -927,10 +929,10 @@ const IndividualsTable = ({ filters, onSearch, onRefreshStats }) => {
               Page {currentPage} of {totalPages}
             </div>
           </div>
-        </div>
+        </div >
 
         {/* Table Content */}
-        <div className="overflow-x-auto">
+        < div className="overflow-x-auto" >
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50">
@@ -1131,211 +1133,215 @@ const IndividualsTable = ({ filters, onSearch, onRefreshStats }) => {
               )}
             </tbody>
           </table>
-        </div>
+        </div >
 
         {/* Pagination */}
-        {paginatedIndividuals.length > 0 && (
-          <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
-            <div className="flex items-center justify-between">
-              <div className="text-sm text-gray-700">
-                Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, filteredIndividuals.length)} of{' '}
-                {filteredIndividuals.length} results
-              </div>
+        {
+          paginatedIndividuals.length > 0 && (
+            <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-gray-700">
+                  Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, filteredIndividuals.length)} of{' '}
+                  {filteredIndividuals.length} results
+                </div>
 
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                  disabled={currentPage === 1}
-                  className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </button>
-
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                <div className="flex items-center space-x-2">
                   <button
-                    key={page}
-                    onClick={() => setCurrentPage(page)}
-                    className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors duration-200 ${currentPage === page
-                      ? 'bg-blue-600 text-white'
-                      : 'text-gray-700 hover:bg-gray-100'
-                      }`}
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
                   >
-                    {page}
+                    <ChevronLeft className="w-4 h-4" />
                   </button>
-                ))}
 
-                <button
-                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                  disabled={currentPage === totalPages}
-                  className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </button>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                    <button
+                      key={page}
+                      onClick={() => setCurrentPage(page)}
+                      className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors duration-200 ${currentPage === page
+                        ? 'bg-blue-600 text-white'
+                        : 'text-gray-700 hover:bg-gray-100'
+                        }`}
+                    >
+                      {page}
+                    </button>
+                  ))}
+
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                    className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        )}
-      </div>
+          )
+        }
+      </div >
 
       {/* Individual Detail Modal */}
-      {selectedIndividual && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <h3 className="text-xl font-semibold text-gray-900">Individual Details</h3>
-                <button
-                  onClick={() => setSelectedIndividual(null)}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200"
-                >
-                  ×
-                </button>
+      {
+        selectedIndividual && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="p-6 border-b border-gray-200">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xl font-semibold text-gray-900">Individual Details</h3>
+                  <button
+                    onClick={() => setSelectedIndividual(null)}
+                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                  >
+                    ×
+                  </button>
+                </div>
               </div>
-            </div>
 
-            <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Personal Information */}
-                <div>
-                  {/* adding and updating view details model*/}
+              <div className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Personal Information */}
+                  <div>
+                    {/* adding and updating view details model*/}
 
-                  <div className="flex items-center space-x-4 mb-6">
-                    <div className="w-16 h-16 rounded-full overflow-hidden bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                      {selectedIndividual.photoUrl ? (
-                        <img
-                          src={`http://localhost:5000${selectedIndividual.photoUrl}`}
-                          alt={`${selectedIndividual.firstName} ${selectedIndividual.lastName}`}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.target.style.display = 'none';
-                            e.target.parentElement.innerHTML = `
+                    <div className="flex items-center space-x-4 mb-6">
+                      <div className="w-16 h-16 rounded-full overflow-hidden bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                        {selectedIndividual.photoUrl ? (
+                          <img
+                            src={`http://localhost:5000${selectedIndividual.photoUrl}`}
+                            alt={`${selectedIndividual.firstName} ${selectedIndividual.lastName}`}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                              e.target.parentElement.innerHTML = `
               <span class="text-white font-semibold text-lg">
                 ${selectedIndividual.firstName?.charAt(0) || ''}${selectedIndividual.lastName?.charAt(0) || ''}
               </span>
                `;
-                          }}
-                        />
-                      ) : (
-                        <span className="text-white font-semibold text-lg">
-                          {selectedIndividual.firstName?.charAt(0)}{selectedIndividual.lastName?.charAt(0)}
-                        </span>
-                      )}
+                            }}
+                          />
+                        ) : (
+                          <span className="text-white font-semibold text-lg">
+                            {selectedIndividual.firstName?.charAt(0)}{selectedIndividual.lastName?.charAt(0)}
+                          </span>
+                        )}
+                      </div>
+                      <div>
+                        <h4 className="text-xl font-semibold text-gray-900">
+                          {selectedIndividual.firstName} {selectedIndividual.lastName}
+                        </h4>
+                        <p className="text-gray-600">{selectedIndividual.occupation}</p>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="text-xl font-semibold text-gray-900">
-                        {selectedIndividual.firstName} {selectedIndividual.lastName}
-                      </h4>
-                      <p className="text-gray-600">{selectedIndividual.occupation}</p>
-                    </div>
+                    {/*ending the adding code */}
+                    <h4 className="text-sm font-medium text-gray-700 mb-4 pb-2 border-b">Personal Information</h4>
+                    <dl className="space-y-3">
+                      <div>
+                        <dt className="text-sm text-gray-500">Full Name</dt>
+                        <dd className="text-sm font-medium text-gray-900">
+                          {selectedIndividual.firstName} {selectedIndividual.lastName}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-sm text-gray-500">Age & Gender</dt>
+                        <dd className="text-sm font-medium text-gray-900">
+                          {selectedIndividual.age} years, {selectedIndividual.gender}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-sm text-gray-500">Occupation</dt>
+                        <dd className="text-sm font-medium text-gray-900">
+                          {selectedIndividual.occupation}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-sm text-gray-500">Education Level</dt>
+                        <dd className="text-sm font-medium text-gray-900">
+                          {getEducationLabel(selectedIndividual.education)}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-sm text-gray-500">Religion</dt>
+                        <dd className="text-sm font-medium text-gray-900">
+                          {getReligionLabel(selectedIndividual.religion)}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-sm text-gray-500">Relationship</dt>
+                        <dd className="text-sm font-medium text-gray-900">
+                          {getRelationshipLabel(selectedIndividual.relationship)}
+                        </dd>
+                      </div>
+                    </dl>
                   </div>
-                  {/*ending the adding code */}
-                  <h4 className="text-sm font-medium text-gray-700 mb-4 pb-2 border-b">Personal Information</h4>
-                  <dl className="space-y-3">
-                    <div>
-                      <dt className="text-sm text-gray-500">Full Name</dt>
-                      <dd className="text-sm font-medium text-gray-900">
-                        {selectedIndividual.firstName} {selectedIndividual.lastName}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-sm text-gray-500">Age & Gender</dt>
-                      <dd className="text-sm font-medium text-gray-900">
-                        {selectedIndividual.age} years, {selectedIndividual.gender}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-sm text-gray-500">Occupation</dt>
-                      <dd className="text-sm font-medium text-gray-900">
-                        {selectedIndividual.occupation}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-sm text-gray-500">Education Level</dt>
-                      <dd className="text-sm font-medium text-gray-900">
-                        {getEducationLabel(selectedIndividual.education)}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-sm text-gray-500">Religion</dt>
-                      <dd className="text-sm font-medium text-gray-900">
-                        {getReligionLabel(selectedIndividual.religion)}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-sm text-gray-500">Relationship</dt>
-                      <dd className="text-sm font-medium text-gray-900">
-                        {getRelationshipLabel(selectedIndividual.relationship)}
-                      </dd>
-                    </div>
-                  </dl>
+
+                  {/* Contact & Location */}
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-700 mb-4 pb-2 border-b">Contact & Location</h4>
+                    <dl className="space-y-3">
+                      <div>
+                        <dt className="text-sm text-gray-500">Email</dt>
+                        <dd className="text-sm font-medium text-gray-900">
+                          {selectedIndividual.email || 'Not provided'}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-sm text-gray-500">Phone</dt>
+                        <dd className="text-sm font-medium text-gray-900">
+                          {selectedIndividual.phone}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-sm text-gray-500">Family Number</dt>
+                        <dd className="text-sm font-medium text-gray-900">
+                          {selectedIndividual.familyNumber}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-sm text-gray-500">House Number</dt>
+                        <dd className="text-sm font-medium text-gray-900">
+                          {selectedIndividual.houseNumber}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-sm text-gray-500">Nationality</dt>
+                        <dd className="text-sm font-medium text-gray-900">
+                          {selectedIndividual.nationality === 'ethiopian' ? 'Ethiopian' : 'Other'}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-sm text-gray-500">Registered On</dt>
+                        <dd className="text-sm font-medium text-gray-900">
+                          {new Date(selectedIndividual.createdAt).toLocaleDateString()}
+                        </dd>
+                      </div>
+                    </dl>
+                  </div>
                 </div>
 
-                {/* Contact & Location */}
-                <div>
-                  <h4 className="text-sm font-medium text-gray-700 mb-4 pb-2 border-b">Contact & Location</h4>
-                  <dl className="space-y-3">
-                    <div>
-                      <dt className="text-sm text-gray-500">Email</dt>
-                      <dd className="text-sm font-medium text-gray-900">
-                        {selectedIndividual.email || 'Not provided'}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-sm text-gray-500">Phone</dt>
-                      <dd className="text-sm font-medium text-gray-900">
-                        {selectedIndividual.phone}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-sm text-gray-500">Family Number</dt>
-                      <dd className="text-sm font-medium text-gray-900">
-                        {selectedIndividual.familyNumber}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-sm text-gray-500">House Number</dt>
-                      <dd className="text-sm font-medium text-gray-900">
-                        {selectedIndividual.houseNumber}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-sm text-gray-500">Nationality</dt>
-                      <dd className="text-sm font-medium text-gray-900">
-                        {selectedIndividual.nationality === 'ethiopian' ? 'Ethiopian' : 'Other'}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-sm text-gray-500">Registered On</dt>
-                      <dd className="text-sm font-medium text-gray-900">
-                        {new Date(selectedIndividual.createdAt).toLocaleDateString()}
-                      </dd>
-                    </div>
-                  </dl>
-                </div>
-              </div>
-
-              {/* Actions */}
-              <div className="mt-6 pt-6 border-t border-gray-200">
-                <div className="flex justify-end space-x-3">
-                  <button
-                    onClick={() => setSelectedIndividual(null)}
-                    className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200"
-                  >
-                    Close
-                  </button>
-                  <button
-                    onClick={() => handleAction('edit', selectedIndividual)}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
-                  >
-                    Edit Individual
-                  </button>
+                {/* Actions */}
+                <div className="mt-6 pt-6 border-t border-gray-200">
+                  <div className="flex justify-end space-x-3">
+                    <button
+                      onClick={() => setSelectedIndividual(null)}
+                      className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                    >
+                      Close
+                    </button>
+                    <button
+                      onClick={() => handleAction('edit', selectedIndividual)}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+                    >
+                      Edit Individual
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )
+      }
+    </div >
   );
 };
 

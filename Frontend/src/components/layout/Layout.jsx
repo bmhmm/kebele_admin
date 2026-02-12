@@ -3,11 +3,13 @@ import { useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 
+
 const Layout = ({ children }) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const location = useLocation();
+
 
   // Detect screen size
   useEffect(() => {
@@ -56,14 +58,23 @@ const Layout = ({ children }) => {
       </div>
 
       {/* Sidebar */}
-      <div
+      {/* <div
         className={`
           fixed inset-y-0 left-0 z-40 transform transition-all duration-500 ease-in-out
           ${isMobile ? (mobileSidebarOpen ? "translate-x-0" : "-translate-x-full") : "translate-x-0"}
           ${sidebarWidth}
           shadow-[0_0_40px_rgba(255,255,255,0.08)]
         `}
-      >
+      > */}
+      <div
+  className={`
+    fixed inset-y-0 left-0 z-50 transform transition-all duration-500 ease-in-out  {/* Changed z-40 to z-50 */}
+    ${isMobile ? (mobileSidebarOpen ? "translate-x-0" : "-translate-x-full") : "translate-x-0"}
+    ${sidebarWidth}
+    shadow-[0_0_40px_rgba(255,255,255,0.08)]
+  `}
+>
+
         <Sidebar
           isCollapsed={isMobile ? false : sidebarCollapsed}
           onToggleCollapse={toggleSidebar}
@@ -83,6 +94,7 @@ const Layout = ({ children }) => {
         className={`relative min-h-screen transition-all duration-500 ease-in-out ${mainContentMargin} z-10`}
       >
         <Header onToggleSidebar={toggleSidebar} sidebarCollapsed={sidebarCollapsed} />
+
         <main className="p-6 relative z-10">
           <div key={location.pathname} className="page-fade">
             {children}

@@ -129,7 +129,7 @@ export const getStatusColor = (status) => {
     'not-issued': 'bg-red-100 text-red-800',
     occupied: 'bg-green-100 text-green-800',
     vacant: 'bg-yellow-100 text-yellow-800',
-    'under-construction': 'bg-blue-100 text-blue-800',
+    'under_construction': 'bg-blue-100 text-blue-800',
     damaged: 'bg-red-100 text-red-800',
   };
   return statusColors[status] || 'bg-gray-100 text-gray-800';

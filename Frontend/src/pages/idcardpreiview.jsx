@@ -57,21 +57,21 @@ const IdCardPreview = ({ cardData, individual }) => {
                     <div className="col-span-2">
                         <div className="space-y-2">
                             <div>
-                                <p className="text-xs text-gray-500">NAME / MAQAA / ስም</p>
+                                <p className="text-xs text-gray-900">NAME / MAQAA / ስም</p>
                                 <p className="font-bold">
                                     {individual?.first_name} {individual?.last_name}
                                 </p>
                             </div>
 
                             <div>
-                                <p className="text-xs text-gray-500">SEX / SAALA / ጾታ</p>
+                                <p className="text-xs text-gray-900">SEX / SAALA / ጾታ</p>
                                 <p className="font-medium">
                                     {individual?.gender === 'male' ? 'Male / Dhirsa / ወንድ' : 'Female / Dhala / ሴት'}
                                 </p>
                             </div>
 
                             <div>
-                                <p className="text-xs text-gray-500">DATE OF BIRTH / WAAGGA DHAALCHAA</p>
+                                <p className="text-xs text-gray-900">DATE OF BIRTH / WAAGGA DHAALCHAA</p>
                                 <p className="font-medium">
                                     {new Date(individual?.dob).toLocaleDateString('en-GB', {
                                         day: '2-digit',
@@ -82,22 +82,22 @@ const IdCardPreview = ({ cardData, individual }) => {
                             </div>
 
                             <div>
-                                <p className="text-xs text-gray-500">PLACE OF BIRTH / BAKK DHAALCHAA</p>
+                                <p className="text-xs text-gray-900">PLACE OF BIRTH / BAKK DHAALCHAA</p>
                                 <p className="font-medium">{cardData?.place_of_birth}</p>
                             </div>
 
                             <div>
-                                <p className="text-xs text-gray-500">RESIDENCE / TEESSOO / አድራሻ</p>
+                                <p className="text-xs text-gray-900">RESIDENCE / TEESSOO / አድራሻ</p>
                                 <p className="font-medium">{cardData?.residence_address}</p>
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <p className="text-xs text-gray-500">ISSUE DATE</p>
+                                    <p className="text-xs text-gray-900">ISSUE DATE</p>
                                     <p className="font-medium">{cardData?.issue_date}</p>
                                 </div>
                                 <div>
-                                    <p className="text-xs text-gray-500">EXPIRY DATE</p>
+                                    <p className="text-xs text-gray-900">EXPIRY DATE</p>
                                     <p className="font-medium">{cardData?.expiry_date}</p>
                                 </div>
                             </div>

@@ -152,6 +152,7 @@ const ListIndividuals = () => {
     window.history.back();
   };
 
+
   // const handleExport = () => {
   //   console.log('Exporting individuals data...');
   // Implement export functionality
@@ -447,8 +448,8 @@ const ListIndividuals = () => {
             Back
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Individuals</h1>
-            <p className="text-gray-600">Manage and view all registered individuals</p>
+            <h1 className="text-3xl font-bold text-blue-300">Individuals</h1>
+            <p className="text-gray-400">Manage and view all registered individuals</p>
           </div>
         </div>
 

@@ -163,6 +163,15 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+process.env.JWT_SECRET = 'your-super-secret-jwt-key-change-this-in-production';
+
+// app.use(cors({
+//   origin: 'http://localhost:5173',
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+//   credentials: true,
+//   allowedHeaders: ['Content-Type', 'Authorization']
+// }));
+
 // // Middleware
 // app.use(cors());
 
@@ -176,8 +185,9 @@ const PORT = process.env.PORT || 5000;
 
 app.use(cors({
   origin: 'http://localhost:5173', // Your React app URL
-   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true
+   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  credentials: true,
+   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 ///////////////////////////
@@ -202,6 +212,16 @@ if (fs.existsSync(uploadsDir)) {
 // Routes
 app.use('/api/individuals', require('./routes/individuals'));
 app.use('/api/families', require('./routes/families'));
+app.use('/api/id-cards', require('./routes/idCards'));
+app.use('/api/houses',require('./routes/house'))
+app.use('/api/dashboard', require('./routes/dashboard'));
+app.use('/api/dashboard/statistics', require('./routes/dashboard'));
+
+app.use('/api/auth', require('./routes/authRoute'));
+
+// Make sure this is BEFORE your routes
+app.use('/api/individuals', require('./routes/individuals'));
+
 
 // Health check route
 app.get('/api/health', (req, res) => {

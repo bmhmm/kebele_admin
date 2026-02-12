@@ -190,7 +190,8 @@ const AddIdCard = () => {
             Back
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-orange-100">Issue ID Card</h1>
+            <h1 className="text-3xl font-bold text-blue-300">Issue ID Card</h1>
+            <p className="text-gray-400">Add a new ID card to the kebele system</p>
             {/* <p className="text-blue-100">Create and issue Ethiopian National Identification Cards</p> */}
           </div>
         </div>

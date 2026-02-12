@@ -342,8 +342,8 @@
 //           <span>Back</span>
 //         </button>
 //         <div>
-//           <h1 className="text-3xl font-bold text-gray-900">Register Family</h1>
-//           <p className="text-gray-600">Add a new family to the kebele system</p>
+//           <h1 className="text-3xl font-bold text-gray-200">Register Family</h1>
+//           <p className="text-gray-100">Add a new family to the kebele system</p>
 //         </div>
 //       </div>
 
@@ -770,8 +770,8 @@ const AddFamily = () => {
             Back
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-200">Register Family</h1>
-            <p className="text-gray-100">Add a new family to the kebele system</p>
+            <h1 className="text-3xl font-bold text-blue-400">Register Family</h1>
+            <p className="text-gray-400">Add a new family to the kebele system</p>
           </div>
         </div>
 
@@ -885,3 +885,5 @@ const AddFamily = () => {
 };
 
 export default AddFamily;
+
+

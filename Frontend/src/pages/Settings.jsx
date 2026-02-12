@@ -999,11 +999,12 @@
 
 
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Settings as SettingsIcon,
   User,
   Save,
+  ArrowLeft,
   Plus,
   Trash2,
   Search,
@@ -1026,6 +1027,10 @@ const SettingsPage = () => {
     requireStrongPasswords: true,
     enableNotifications: true,
   });
+
+  const handleBack = () => {
+    window.history.back();
+  };
 
   // User Management State (SIMPLIFIED)
   const [users, setUsers] = useState([
@@ -1076,10 +1081,18 @@ const SettingsPage = () => {
   ];
 
   const handleSaveSettings = () => {
+    localStorage.setItem('userSettings', JSON.stringify(settings));
+
     console.log('Saving settings:', settings);
     // In real app: API call to save settings
     alert('Settings saved successfully!');
   };
+  useEffect(() => {
+    const saved = localStorage.getItem('userSettings');
+    if (saved) {
+      setSettings(JSON.parse(saved));
+    }
+  }, []);
 
   // SIMPLIFIED: User Management Functions
   const handleAddUser = (e) => {
@@ -1122,10 +1135,21 @@ const SettingsPage = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">System Settings</h1>
-          <p className="text-gray-600 mt-1">Manage your kebele administration system</p>
+      {/* //flex items-center justify-between */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+        <div className="flex items-center space-x-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleBack}
+            startIcon={<ArrowLeft className="w-4 h-4" />}
+          >
+            Back
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold text-blue-300">System Settings</h1>
+            <p className="text-gray-400 mt-1">Manage your kebele administration system</p>
+          </div>
         </div>
         <Button
           onClick={handleSaveSettings}
@@ -1148,8 +1172,8 @@ const SettingsPage = () => {
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
                       className={`w-full flex items-center space-x-3 px-3 py-3 text-sm font-medium rounded-lg transition-colors duration-200 ${activeTab === tab.id
-                          ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                          : 'text-gray-700 hover:bg-gray-50'
+                        ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                        : 'text-gray-700 hover:bg-gray-50'
                         }`}
                     >
                       <Icon className="w-4 h-4" />
@@ -1396,18 +1420,18 @@ const SettingsPage = () => {
                             </td>
                             <td className="py-3 px-4">
                               <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${user.role === 'Administrator'
-                                  ? 'bg-purple-100 text-purple-800'
-                                  : user.role === 'Data Entry'
-                                    ? 'bg-blue-100 text-blue-800'
-                                    : 'bg-gray-100 text-gray-800'
+                                ? 'bg-purple-100 text-purple-800'
+                                : user.role === 'Data Entry'
+                                  ? 'bg-blue-100 text-blue-800'
+                                  : 'bg-gray-100 text-gray-800'
                                 }`}>
                                 {user.role}
                               </span>
                             </td>
                             <td className="py-3 px-4">
                               <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${user.status === 'Active'
-                                  ? 'bg-green-100 text-green-800'
-                                  : 'bg-red-100 text-red-800'
+                                ? 'bg-green-100 text-green-800'
+                                : 'bg-red-100 text-red-800'
                                 }`}>
                                 {user.status}
                               </span>

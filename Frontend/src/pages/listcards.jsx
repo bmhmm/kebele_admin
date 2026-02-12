@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { IdCard, Search, Filter, Download, Eye } from 'lucide-react';
+import { IdCard, Search, ArrowLeft, Filter, Download, Eye } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 
 const ListIdCards = () => {
@@ -31,6 +31,10 @@ const ListIdCards = () => {
         }
     };
 
+    const handleBack = () => {
+        window.history.back();
+    };
+
     const handleView = async (cardId) => {
         try {
             setLoadingDetails(true);
@@ -54,33 +58,48 @@ const ListIdCards = () => {
 
     return (
         <div className="space-y-6">
-            <div className="flex justify-between items-center">
-                <h1 className="text-3xl font-bold">Issued ID Cards</h1>
-                <Button onClick={() => window.location.href = '/add-id-card'}>
-                    <IdCard className="w-4 h-4 mr-2" />
-                    Issue New ID
+            <div className="flex relative items-center">
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleBack}
+                    startIcon={<ArrowLeft className="w-4 h-4" />}
+                >
+                    Back
                 </Button>
+                <div className="ml-5">
+                    <h1 className="text-3xl font-bold text-blue-300">Issued ID Cards</h1>
+                    <p className=" text-gray-400">View and manage all registered ID Cards</p>
+                </div>
+                <div className="absolute top-0 right-0">
+                    <Button onClick={() => window.location.href = '/add-id-card'}>
+                        <IdCard className="w-4 h-4 mr-2" />
+                        Issue New ID
+                    </Button>
+                </div>
             </div>
+
+
 
             {/* Stats */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="bg-white p-4 rounded-lg shadow">
+                <div className="bg-gradient-to-br from-orange-50 via-gray-300 to-orange-50 p-4 rounded-lg shadow">
                     <p className="text-sm text-gray-600">Total Issued</p>
                     <p className="text-2xl font-bold">{idCards.length}</p>
                 </div>
-                <div className="bg-white p-4 rounded-lg shadow">
+                <div className="bg-gradient-to-br from-orange-50 via-gray-300 to-orange-50 p-4 rounded-lg shadow">
                     <p className="text-sm text-gray-600">Active</p>
                     <p className="text-2xl font-bold">
                         {idCards.filter(card => card.status === 'issued').length}
                     </p>
                 </div>
-                <div className="bg-white p-4 rounded-lg shadow">
+                <div className="bg-gradient-to-br from-orange-50 via-gray-300 to-orange-50 p-4 rounded-lg shadow">
                     <p className="text-sm text-gray-600">Pending</p>
                     <p className="text-2xl font-bold">
                         {idCards.filter(card => card.status === 'pending').length}
                     </p>
                 </div>
-                <div className="bg-white p-4 rounded-lg shadow">
+                <div className="bg-gradient-to-br from-orange-50 via-gray-300 to-orange-50 p-4 rounded-lg shadow">
                     <p className="text-sm text-gray-600">Expired</p>
                     <p className="text-2xl font-bold">
                         {idCards.filter(card => card.status === 'expired').length}
@@ -156,7 +175,7 @@ const ListIdCards = () => {
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        onClick={() => viewIdCard(card.id)}
+                                        onClick={() => handleView(card.id)}
                                     >
                                         <Eye className="w-4 h-4 mr-1" />
                                         View

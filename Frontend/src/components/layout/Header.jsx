@@ -2,10 +2,22 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Bell, LogOut, Settings, Menu } from 'lucide-react';
 
+
 const Header = ({ onToggleSidebar }) => {
-  const { user, logout, getUserInitials } = useAuth();
+  const { user, logout, } = useAuth();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const profileRef = useRef(null);
+
+  const getUserInitials = () => {
+    if (!user || !user.name) return 'U';
+
+    return user.name
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -55,7 +67,13 @@ const Header = ({ onToggleSidebar }) => {
             3
           </span>
         </button>
-
+                    
+                <button
+          onClick={handleLogout}
+          className="p-2 rounded-xl bg-red-900/30 border border-red-700/30 text-red-300 hover:text-red-100 hover:shadow-[0_0_10px_rgba(255,0,0,0.3)] transition-all duration-300"
+        >
+          <LogOut className="w-5 h-5" />
+        </button>       
         {/* User Profile */}
         <div className="relative" ref={profileRef}>
           <button
@@ -65,14 +83,13 @@ const Header = ({ onToggleSidebar }) => {
             <div className="w-9 h-9 bg-gradient-to-br from-orange-600 to-amber-500 rounded-full flex items-center justify-center text-white font-semibold text-sm shadow-lg shadow-orange-500/30">
               {getUserInitials()}
             </div>
-            <div className="hidden md:block text-left">
+            <div className="text-left">
               <p className="text-sm font-semibold text-orange-100">{user?.name || 'Admin User'}</p>
               <p className="text-xs text-gray-400 capitalize">{user?.role || 'Administrator'}</p>
             </div>
             <svg
-              className={`w-4 h-4 text-orange-300 transition-transform duration-300 ${
-                isProfileOpen ? 'rotate-180' : ''
-              }`}
+              className={`w-4 h-4 text-orange-300 transition-transform duration-300 ${isProfileOpen ? 'rotate-180' : ''
+                }`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -98,13 +115,7 @@ const Header = ({ onToggleSidebar }) => {
                 <span>Settings</span>
               </a>
 
-              <button
-                onClick={handleLogout}
-                className="w-full text-left flex items-center space-x-2 px-4 py-2 text-sm text-red-500 hover:bg-red-900/20 transition-all duration-200"
-              >
-                <LogOut className="w-4 h-4" />
-                <span>Logout</span>
-              </button>
+            
             </div>
           )}
         </div>
@@ -114,3 +125,7 @@ const Header = ({ onToggleSidebar }) => {
 };
 
 export default Header;
+
+
+
+

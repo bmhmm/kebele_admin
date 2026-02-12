@@ -349,15 +349,15 @@ const AddIndividual = () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const response = await fetch('http://localhost:5000/api/individuals/stats');
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch statistics');
       }
-      
+
       const result = await response.json();
-      
+
       if (result.success) {
         setStats(result.data);
       } else {
@@ -401,11 +401,11 @@ const AddIndividual = () => {
             Back
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-200">Add Individual</h1>
-            <p className="text-gray-100">Register a new individual in the kebele system</p>
+            <h1 className="text-3xl font-bold text-blue-300">Add Individual</h1>
+            <p className="text-gray-400">Register a new individual in the kebele system</p>
           </div>
         </div>
-        
+
         {/* Refresh Button */}
         <Button
           variant="outline"
@@ -444,7 +444,7 @@ const AddIndividual = () => {
             </div>
           </CardContent>
         </Card>
-        
+
         {/* This Month Card */}
         <Card>
           <CardContent className="p-4">
@@ -467,7 +467,7 @@ const AddIndividual = () => {
             </div>
           </CardContent>
         </Card>
-        
+
         {/* This Week Card */}
         <Card>
           <CardContent className="p-4">
@@ -490,7 +490,7 @@ const AddIndividual = () => {
             </div>
           </CardContent>
         </Card>
-        
+
         {/* Today Card */}
         <Card>
           <CardContent className="p-4">

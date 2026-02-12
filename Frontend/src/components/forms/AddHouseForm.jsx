@@ -27,7 +27,7 @@ const AddHouseForm = ({ onHouseAdded }) => {
   const statusTypes = [
     { value: 'occupied', label: 'Occupied', color: 'bg-green-500' },
     { value: 'vacant', label: 'Vacant', color: 'bg-yellow-500' },
-    { value: 'under-construction', label: 'Under Construction', color: 'bg-blue-500' },
+    { value: 'under_construction', label: 'Under Construction', color: 'bg-blue-500' },
     { value: 'damaged', label: 'Damaged', color: 'bg-red-500' }
   ];
 
@@ -35,7 +35,7 @@ const AddHouseForm = ({ onHouseAdded }) => {
     initialValues: {
       houseNumber: '',
       area: '',
-      doorCount: '',
+      rooms: '',
       constructionYear: new Date().getFullYear(),
       ownerName: '',
       ownerId: '',
@@ -50,7 +50,8 @@ const AddHouseForm = ({ onHouseAdded }) => {
       const errors = {};
       if (!values.houseNumber.trim()) errors.houseNumber = 'House number is required';
       if (!values.area || values.area < 1) errors.area = 'Valid area is required';
-      if (!values.doorCount || values.doorCount < 1) errors.doorCount = 'Valid door count is required';
+      // if (!values.doorCount || values.doorCount < 1) errors.doorCount = 'Valid door count is required';
+      if (!values.rooms || values.rooms < 1) errors.rooms = 'Room count is required';
       if (!values.constructionYear) errors.constructionYear = 'Construction year is required';
       if (!values.ownerName.trim()) errors.ownerName = 'Owner name is required';
       if (!values.ownerPhone.trim()) errors.ownerPhone = 'Owner phone is required';
@@ -148,13 +149,139 @@ const AddHouseForm = ({ onHouseAdded }) => {
       // Clear errors
       // If you have errors state, reset it here
     },
+    // onSubmit: async (values) => {
+    //   setIsSubmitting(true);
+    //   try {
+    //     const formData = {
+    //       houseNumber: values.houseNumber,
+    //       area: values.area,
+    //       rooms: values.rooms,
+    //       constructionYear: values.constructionYear,
+    //       ownerName: values.ownerName,
+    //       ownerId: values.ownerId || '',
+    //       ownerPhone: values.ownerPhone,
+    //       zone: values.zone,
+    //       kebele: values.kebele,
+    //       city: values.city,
+    //       region: values.region,
+    //       remarks: values.remarks || '',
+    //       propertyType: selectedHouseType,
+    //       status: selectedStatus
+    //     };
+
+    //     console.log('Sending to backend:', formData);
+
+    //     const response = await fetch('http://localhost:5000/api/houses', {
+    //       method: 'POST',
+    //       headers: { 'Content-Type': 'application/json' },
+    //       body: JSON.stringify(formData)
+    //     });
+
+    //     const result = await response.json();
+    //     console.log('Backend response:', result);
+
+    //     if (!response.ok) {
+    //       throw new Error(result.message || 'Failed to register house');
+    //     }
+
+    //     alert('House registered successfully!');
+
+    //     // RESET THE FORM - Update the values directly
+    //     values.houseNumber = '';
+    //     values.area = '';
+    //     values.doorCount = '';
+    //     values.constructionYear = new Date().getFullYear();
+    //     values.ownerName = '';
+    //     values.ownerId = '';
+    //     values.ownerPhone = '';
+    //     values.zone = '';
+    //     values.region = '';
+    //     values.remarks = '';
+
+    //     // Reset state variables
+    //     setSelectedHouseType('');
+    //     setSelectedStatus('');
+
+    //     // Call onHouseAdded to refresh stats
+    //     if (onHouseAdded) {
+    //       onHouseAdded();
+    //     }
+
+    //     // Clear any errors
+    //     // You might need to reset errors if you're using error state
+
+    //   } catch (error) {
+    //     console.error('Submission error:', error);
+    //     alert(`Error: ${error.message}`);
+    //   } finally {
+    //     setIsSubmitting(false);
+    //   }
+    // }
+    // onSubmit: async (values, { resetForm }) => { // Add resetForm from useForm
+    //   setIsSubmitting(true);
+    //   try {
+    //     const formData = {
+    //       houseNumber: values.houseNumber,
+    //       area: values.area,
+    //       rooms: values.rooms,
+    //       constructionYear: values.constructionYear,
+    //       ownerName: values.ownerName,
+    //       ownerId: values.ownerId || '',
+    //       ownerPhone: values.ownerPhone,
+    //       zone: values.zone,
+    //       kebele: values.kebele,
+    //       city: values.city,
+    //       region: values.region,
+    //       remarks: values.remarks || '',
+    //       propertyType: selectedHouseType,
+    //       status: selectedStatus
+    //     };
+
+    //     console.log('Sending to backend:', formData);
+
+    //     const response = await fetch('http://localhost:5000/api/houses', {
+    //       method: 'POST',
+    //       headers: { 'Content-Type': 'application/json' },
+    //       body: JSON.stringify(formData)
+    //     });
+
+    //     const result = await response.json();
+    //     console.log('Backend response:', result);
+
+    //     if (!response.ok) {
+    //       throw new Error(result.message || 'Failed to register house');
+    //     }
+
+    //     alert('House registered successfully!');
+
+    //     // PROPER FORM RESET
+    //     resetForm(); // This resets all form values to initialValues
+
+    //     // Reset state variables
+    //     setSelectedHouseType('');
+    //     setSelectedStatus('');
+
+    //     // Call onHouseAdded to refresh stats
+    //     if (onHouseAdded) {
+    //       onHouseAdded();
+    //     }
+
+    //   } catch (error) {
+    //     console.error('Submission error:', error);
+    //     alert(`Error: ${error.message}`);
+    //   } finally {
+    //     setIsSubmitting(false);
+    //   }
+    // }
+
+
     onSubmit: async (values) => {
       setIsSubmitting(true);
       try {
         const formData = {
           houseNumber: values.houseNumber,
           area: values.area,
-          doorCount: values.doorCount,
+          rooms: values.rooms,
           constructionYear: values.constructionYear,
           ownerName: values.ownerName,
           ownerId: values.ownerId || '',
@@ -185,10 +312,11 @@ const AddHouseForm = ({ onHouseAdded }) => {
 
         alert('House registered successfully!');
 
-        // RESET THE FORM - Update the values directly
+        // MANUAL FORM RESET (since resetForm2 doesn't exist)
+        // Reset form values
         values.houseNumber = '';
         values.area = '';
-        values.doorCount = '';
+        values.rooms = '';
         values.constructionYear = new Date().getFullYear();
         values.ownerName = '';
         values.ownerId = '';
@@ -197,17 +325,17 @@ const AddHouseForm = ({ onHouseAdded }) => {
         values.region = '';
         values.remarks = '';
 
-        // Reset state variables
+        // Reset selections
         setSelectedHouseType('');
         setSelectedStatus('');
+
+        // Clear errors if you have error state
+        // setErrors({});
 
         // Call onHouseAdded to refresh stats
         if (onHouseAdded) {
           onHouseAdded();
         }
-
-        // Clear any errors
-        // You might need to reset errors if you're using error state
 
       } catch (error) {
         console.error('Submission error:', error);
@@ -216,8 +344,6 @@ const AddHouseForm = ({ onHouseAdded }) => {
         setIsSubmitting(false);
       }
     }
-
-
   });
 
   return (
@@ -244,7 +370,7 @@ const AddHouseForm = ({ onHouseAdded }) => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 House Number <span className="text-red-500">*</span>
@@ -307,6 +433,115 @@ const AddHouseForm = ({ onHouseAdded }) => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
+                Room Count <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                name="rooms"
+                value={values.rooms}
+                onChange={handleChange}
+                onBlur={() => validateField('rooms')}
+                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${errors.rooms ? 'border-red-300' : 'border-gray-300'
+                  }`}
+                placeholder="Enter room count"
+                min="1"
+              />
+              {errors.rooms && (
+                <p className="mt-1 text-sm text-red-600">{errors.rooms}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Construction Year <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type="number"
+                  name="constructionYear"
+                  value={values.constructionYear}
+                  onChange={handleChange}
+                  onBlur={() => validateField('constructionYear')}
+                  min="1900"
+                  max="2099"
+                  className={`w-full pl-10 pr-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${errors.constructionYear ? 'border-red-300' : 'border-gray-300'
+                    }`}
+                />
+              </div>
+              {errors.constructionYear && (
+                <p className="mt-1 text-sm text-red-600">{errors.constructionYear}</p>
+              )}
+            </div>
+          </div> */}
+          {/*start of update grid section*/}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* House Number */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                House Number <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="houseNumber"
+                value={values.houseNumber}
+                onChange={handleChange}
+                onBlur={() => validateField('houseNumber')}
+                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${errors.houseNumber ? 'border-red-300' : 'border-gray-300'
+                  }`}
+                placeholder="Enter house number"
+              />
+              {errors.houseNumber && (
+                <p className="mt-1 text-sm text-red-600">{errors.houseNumber}</p>
+              )}
+            </div>
+
+            {/* Area */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Area (Square Meters) <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                name="area"
+                value={values.area}
+                onChange={handleChange}
+                onBlur={() => validateField('area')}
+                min="1"
+                step="0.1"
+                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${errors.area ? 'border-red-300' : 'border-gray-300'
+                  }`}
+                placeholder="Enter area"
+              />
+              {errors.area && (
+                <p className="mt-1 text-sm text-red-600">{errors.area}</p>
+              )}
+            </div>
+
+            {/* Room Count - FIXED: Added div wrapper */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Room Count <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                name="rooms"
+                value={values.rooms}
+                onChange={handleChange}
+                onBlur={() => validateField('rooms')}
+                className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 ${errors.rooms ? 'border-red-300' : 'border-gray-300'
+                  }`}
+                placeholder="Enter room count"
+                min="1"
+              />
+              {errors.rooms && (
+                <p className="mt-1 text-sm text-red-600">{errors.rooms}</p>
+              )}
+            </div>
+
+            {/* Construction Year */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Construction Year <span className="text-red-500">*</span>
               </label>
               <div className="relative">
@@ -328,6 +563,7 @@ const AddHouseForm = ({ onHouseAdded }) => {
               )}
             </div>
           </div>
+          {/*end of updated grid section*/}
 
           {/* House Type Selection */}
           <div className="mt-8">

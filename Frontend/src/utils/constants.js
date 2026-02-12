@@ -71,7 +71,7 @@ export const HOUSE_TYPES = [
 export const HOUSE_STATUSES = [
   { value: 'occupied', label: 'Occupied', color: 'green' },
   { value: 'vacant', label: 'Vacant', color: 'yellow' },
-  { value: 'under-construction', label: 'Under Construction', color: 'blue' },
+  { value: 'under_construction', label: 'Under Construction', color: 'blue' },
   { value: 'damaged', label: 'Damaged', color: 'red' },
 ];
 

@@ -150,6 +150,67 @@ const individualController = {
     }
   },
 
+
+
+  /* begin getfamilystatistics function here*/
+
+getFamilyStatistics: (req, res) => {
+    console.log('📊 Fetching family statistics...');
+    
+    // Adjust this SQL based on your actual database structure
+    const sql = `
+      SELECT 
+        COUNT(DISTINCT family_number) as totalFamilies,
+        COUNT(*) as totalMembers,
+        ROUND(COUNT(*) / COUNT(DISTINCT family_number), 1) as avgPerFamily,
+        COUNT(DISTINCT CASE 
+          WHEN MONTH(created_at) = MONTH(CURRENT_DATE()) 
+          AND YEAR(created_at) = YEAR(CURRENT_DATE()) 
+          THEN family_number 
+        END) as thisMonth
+      FROM individuals 
+      WHERE deleted_at IS NULL
+    `;
+
+    // If you're using a db connection directly
+    // db.query(sql, (err, results) => {
+    //   if (err) {
+    //     console.error('Database error:', err);
+    //     return res.status(500).json({
+    //       success: false,
+    //       message: 'Error fetching family statistics'
+    //     });
+    //   }
+    
+    //   const stats = results[0] || {};
+      
+    //   res.json({
+    //     success: true,
+    //     data: {
+    //       totalFamilies: stats.totalFamilies || 0,
+    //       totalMembers: stats.totalMembers || 0,
+    //       avgPerFamily: stats.avgPerFamily || 0,
+    //       thisMonth: stats.thisMonth || 0
+    //     }
+    //   });
+    // });
+
+    // TEMPORARY: Return dummy data for testing
+    // Remove this and use the db.query above when ready
+    res.json({
+      success: true,
+      data: {
+        totalFamilies: 342,
+        totalMembers: 1247,
+        avgPerFamily: 3.6,
+        thisMonth: 15
+      }
+    });
+  },
+
+  /*ending of getfamilystatistics function here*/
+
+
   // Get all active individuals
   getAllIndividuals: (req, res) => {
     Individual.getAll((err, results) => {

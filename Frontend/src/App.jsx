@@ -926,6 +926,7 @@ import Layout from './components/layout/Layout'
 import LoadingSpinner from './components/ui/LoadingSpinner'
 import { MembersPopupProvider } from './contexts/MembersPopupContext';
 import ListIdCards from '../src/pages/listcards';
+import ProtectedRoute from './components/ProtectedRoute';
 
 
 // Lazy load pages for better performance
@@ -959,27 +960,27 @@ const PageLoader = () => (
 )
 
 // Protected Route wrapper
-const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, isLoading } = useAuth()
-  const location = useLocation()
+// const ProtectedRoute = ({ children }) => {
+//   const { isAuthenticated, isLoading } = useAuth()
+//   const location = useLocation()
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-        <div className="text-center">
-          <LoadingSpinner size="lg" />
-          <p className="mt-4 text-gray-600 font-medium">Checking authentication...</p>
-        </div>
-      </div>
-    )
-  }
+//   if (isLoading) {
+//     return (
+//       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+//         <div className="text-center">
+//           <LoadingSpinner size="lg" />
+//           <p className="mt-4 text-gray-600 font-medium">Checking authentication...</p>
+//         </div>
+//       </div>
+//     )
+//   }
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />
-  }
+//   if (!isAuthenticated) {
+//     return <Navigate to="/login" state={{ from: location }} replace />
+//   }
 
-  return <Layout>{children}</Layout>
-}
+//   return <Layout>{children}</Layout>
+// }
 
 // Public Route wrapper (redirect to dashboard if already authenticated)
 const PublicRoute = ({ children }) => {
@@ -1041,167 +1042,102 @@ function App() {
       <Toaster position="top-right" />
       <Suspense fallback={<PageLoader />}>
         <MembersPopupProvider>
+
+          {/**/}
+
           <Routes>
-            {/* Public Routes */}
-            <Route
-              path="/login"
-              element={
-                <PublicRoute>
-                  <Login />
-                </PublicRoute>
-              }
-            />
+            {/* Public Route */}
+            <Route path="/login" element={<Login />} />
 
-            {/*here is for login page and role based dashboards*/}
-            {/* Role-specific dashboards */}
-            {/* <Route path="/dashboard/admin" element={
-              <ProtectedRoute allowedRoles={['Administrator']}>
-                <AdminDashboard />
+            {/* Main Dashboard - Shows different content based on role */}
+            <Route path="/" element={
+              <ProtectedRoute>
+                <Dashboard />
               </ProtectedRoute>
-            } /> */}
-            {/*end of login and role based dashboards*/}
+            } />
 
-            {/* Protected Routes */}
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            {/*starting of adding role based route*/}
+            {/* Admin Only Routes */}
+            <Route path="/settings" element={
+              <ProtectedRoute allowedRoles={['Administrator']}>
+                <Settings />
+              </ProtectedRoute>
+            } />
 
-            <Route
-              path="/settings"
-              element={
-                <ProtectedRoute allowedRoles={['Administrator']}>
-                  <Settings />
-                </ProtectedRoute>
-              }
-            />
+            {/* Admin + Data Entry Routes (No View Only) */}
+            <Route path="/add-individual" element={
+              <ProtectedRoute allowedRoles={['Administrator', 'Data Entry Clerk']}>
+                <AddIndividual />
+              </ProtectedRoute>
+            } />
 
-// For data entry clerk routes (no settings):
-            <Route
-              path="/add-individual"
-              element={
-                <ProtectedRoute
-                  allowedRoles={['Administrator', 'Data Entry Clerk']}
-                  requiredPermissions={['canAddCitizens']}
-                >
-                  <AddIndividual />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/add-family" element={
+              <ProtectedRoute allowedRoles={['Administrator', 'Data Entry Clerk']}>
+                <AddFamily />
+              </ProtectedRoute>
+            } />
 
-// For view-only routes:
-            <Route
-              path="/list-individuals"
-              element={
-                <ProtectedRoute
-                  allowedRoles={['Administrator', 'Data Entry Clerk', 'View Only']}
-                  requiredPermissions={['canViewReports']}
-                >
-                  <ListIndividuals />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/add-house" element={
+              <ProtectedRoute allowedRoles={['Administrator', 'Data Entry Clerk']}>
+                <AddHouse />
+              </ProtectedRoute>
+            } />
 
-            {/*ending of adding role based route*/}
-            <Route
-              path="/add-individual"
-              element={
-                <ProtectedRoute>
-                  <AddIndividual />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/add-family"
-              element={
-                <ProtectedRoute>
-                  <AddFamily />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/add-house"
-              element={
-                <ProtectedRoute>
-                  <AddHouse />
-                </ProtectedRoute>
-              }
-            />
-            {/*Listing Houses*/}
-            <Route path="/list-houses" element={<ListHouses />} />
-            {/*ending of listing houses*/}
-            <Route
-              path="/add-id-card"
-              element={
-                <ProtectedRoute>
-                  <AddIdCard />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/list-id-cards" element={<ListIdCards />} />
-            <Route
-              path="/list-individuals"
-              element={
-                <ProtectedRoute>
-                  <ListIndividuals />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/edit-individual/:id" element={<EditIndividual />} />
-            <Route
-              path="/list-families"
-              element={
-                <ProtectedRoute>
-                  <ListFamilies />
-                </ProtectedRoute>
-              }
-            />
-            {/*family details route*/}
-            <Route path="/families/:id" element={<FamilyDetails />} />
-            {/**/}
+            <Route path="/add-id-card" element={
+              <ProtectedRoute allowedRoles={['Administrator', 'Data Entry Clerk']}>
+                <AddIdCard />
+              </ProtectedRoute>
+            } />
 
-            {/* adding addmembers routes*/}
-            <Route
-              path="/families/:familyId/add-members"
-              element={<AddFamilyMembers />} />
+            <Route path="/edit-individual/:id" element={
+              <ProtectedRoute allowedRoles={['Administrator', 'Data Entry Clerk']}>
+                <EditIndividual />
+              </ProtectedRoute>
+            } />
 
-            {/* ending adding addmembers route*/}
-            {/* <Route
-              path="/search"
-              element={
-                <ProtectedRoute>
-                  <Search />
-                </ProtectedRoute>
-              }
-            /> */}
-            {/* <Route
-              path="/list-id-cards"
-              element={
-                <ProtectedRoute>
-                  <ListIdCards />
-                </ProtectedRoute>
-              }
-            /> */}
-            <Route
-              path="/settings"
-              element={
-                <ProtectedRoute>
-                  <Settings />
-                </ProtectedRoute>
-              }
-            />
+            {/* View Routes - All roles can access */}
+            <Route path="/list-individuals" element={
+              <ProtectedRoute allowedRoles={['Administrator', 'Data Entry Clerk', 'View Only']}>
+                <ListIndividuals />
+              </ProtectedRoute>
+            } />
 
-            {/* Fallback routes */}
-            <Route path="/dashboard" element={<Navigate to="/" replace />} />
+            <Route path="/list-families" element={
+              <ProtectedRoute allowedRoles={['Administrator', 'Data Entry Clerk', 'View Only']}>
+                <ListFamilies />
+              </ProtectedRoute>
+            } />
 
-            {/* 404 Not Found */}
+            <Route path="/list-houses" element={
+              <ProtectedRoute allowedRoles={['Administrator', 'Data Entry Clerk', 'View Only']}>
+                <ListHouses />
+              </ProtectedRoute>
+            } />
 
+            <Route path="/list-id-cards" element={
+              <ProtectedRoute allowedRoles={['Administrator', 'Data Entry Clerk', 'View Only']}>
+                <ListIdCards />
+              </ProtectedRoute>
+            } />
+
+            {/* Family details - All can view */}
+            <Route path="/families/:id" element={
+              <ProtectedRoute allowedRoles={['Administrator', 'Data Entry Clerk', 'View Only']}>
+                <FamilyDetails />
+              </ProtectedRoute>
+            } />
+
+            {/* Add members - Admin + Data Entry only */}
+            <Route path="/families/:familyId/add-members" element={
+              <ProtectedRoute allowedRoles={['Administrator', 'Data Entry Clerk']}>
+                <AddFamilyMembers />
+              </ProtectedRoute>
+            } />
+
+            {/* Fallback route */}
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          {/**/}
+
         </MembersPopupProvider>
       </Suspense>
     </div>

@@ -428,6 +428,24 @@ const AddIndividualForm = () => {
               )}
             </div>
 
+            {/*adding father's name field*/}
+
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Father's Name (For ID Card)
+              </label>
+              <input
+                type="text"
+                name="fatherName"
+                value={values.fatherName}
+                onChange={handleChange}
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900"
+                placeholder="Father's name (will appear on ID card)"
+              />
+            </div>
+            {/* ending father's name fiels here*/}
+
             {/* House Number */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
