@@ -917,7 +917,6 @@
 
 
 
-
 import React, { Suspense, useEffect } from 'react'
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'; //aditional one
@@ -959,6 +958,14 @@ const PageLoader = () => (
   </div>
 )
 
+
+
+
+
+
+
+
+
 // Protected Route wrapper
 // const ProtectedRoute = ({ children }) => {
 //   const { isAuthenticated, isLoading } = useAuth()
@@ -981,6 +988,14 @@ const PageLoader = () => (
 
 //   return <Layout>{children}</Layout>
 // }
+
+
+
+
+
+
+
+
 
 // Public Route wrapper (redirect to dashboard if already authenticated)
 const PublicRoute = ({ children }) => {
@@ -1047,10 +1062,14 @@ function App() {
 
           <Routes>
             {/* Public Route */}
-            <Route path="/login" element={<Login />} />
+            <Route path="/" element={
+              <ProtectedRoute>
+                <Login />
+              </ProtectedRoute>
+            } />
 
             {/* Main Dashboard - Shows different content based on role */}
-            <Route path="/" element={
+            <Route path="/dashboard" element={
               <ProtectedRoute>
                 <Dashboard />
               </ProtectedRoute>
@@ -1144,4 +1163,10 @@ function App() {
   )
 }
 
-export default App
+export default App;
+
+
+
+
+
+

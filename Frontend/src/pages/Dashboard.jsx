@@ -1223,6 +1223,23 @@ const Dashboard = () => {
 
             {/* Action Buttons */}
             <div className="flex items-center space-x-2">
+
+              {/* here is the LOGOUT button starts */}
+              <Button
+                onClick={() => {
+                  // Add your logout logic here
+                  // Clear auth state/tokens
+                  window.location.href = 'http://localhost:5173/login';
+                }}
+                className="bg-yellow-400 hover:bg-yellow-400/80 text-black font-medium px-4 py-2 rounded-lg 
+               transition-all duration-300 hover:backdrop-blur-sm border-0 shadow-md 
+               hover:shadow-lg hover:shadow-yellow-200/40"
+                size="sm"
+              >
+                Logout
+              </Button>
+              {/* LOGOUT button ends here */}
+
               <Button
                 onClick={handleRefresh}
                 variant="ghost"

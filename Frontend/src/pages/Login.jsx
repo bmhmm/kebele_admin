@@ -331,22 +331,22 @@ const LoginPage = () => {
   const demoCredentials = [
     {
       role: "Administrator",
-      email: "admin@ginjoguduru.gov.et",
-      password: "admin123",  // Make sure this matches your database
+      email: "",
+      password: "",  // Make sure this matches your database
       description: "Full system access",
       color: "from-purple-900 to-purple-600"
     },
     {
       role: "Data Entry Clerk",
-      email: "clerk@ginjoguduru.gov.et",
-      password: "clerk123",  // Make sure this matches your database
+      email: "",
+      password: "",  // Make sure this matches your database
       description: "Can add/edit data",
       color: "from-blue-900 to-blue-600"
     },
     {
       role: "View Only",
-      email: "viewer@ginjoguduru.gov.et",
-      password: "viewer123",  // Make sure this matches your database
+      email: "",
+      password: "",  // Make sure this matches your database
       description: "Read-only access",
       color: "from-gray-900 to-gray-600"
     },
@@ -585,3 +585,28 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+
+
+// const demoCredentials = [
+//     {
+//       role: "Administrator",
+//       email: "admin@ginjoguduru.gov.et",
+//       password: "admin123",  // Make sure this matches your database
+//       description: "Full system access",
+//       color: "from-purple-900 to-purple-600"
+//     },
+//     {
+//       role: "Data Entry Clerk",
+//       email: "clerk@ginjoguduru.gov.et",
+//       password: "clerk123",  // Make sure this matches your database
+//       description: "Can add/edit data",
+//       color: "from-blue-900 to-blue-600"
+//     },
+//     {
+//       role: "View Only",
+//       email: "viewer@ginjoguduru.gov.et",
+//       password: "viewer123",  // Make sure this matches your database
+//       description: "Read-only access",
+//       color: "from-gray-900 to-gray-600"
+//     },
+//   ];
