@@ -25,13 +25,14 @@
 
 // config/database.js
 const mysql = require('mysql2');
+require('dotenv').config();
 
 // Create a connection POOL (not single connection)
 const pool = mysql.createPool({
-    host: 'localhost',
-    user: 'kebele_system',
-    password: 'kebele_system', // Leave empty if no password
-    database: 'kebele_system', // Your actual database name
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD, 
+    database: process.env.DB_NAME,  
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
@@ -49,5 +50,10 @@ pool.getConnection((err, connection) => {
 
 // Export the pool
 module.exports = pool;
+
+
+
+// previous code using single connection (not recommended for production)
+
 
 
